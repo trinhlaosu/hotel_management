@@ -370,17 +370,18 @@ scripts/script_create_db_hotel_management.sql
 scripts/script_insert_data_hotel_management.sql
 ```
 
+Sau khi import SQL, chạy thêm migration `sessions` để tạo bảng `django_session`.
+Bảng này bắt buộc cho chức năng login/logout vì Django lưu phiên đăng nhập trong database:
+
+```bash
+python manage.py migrate sessions
+```
+
 Cách 2: Dùng Django migration:
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
-```
-
-Nếu dùng session đăng nhập, cần đảm bảo bảng `django_session` đã được tạo:
-
-```bash
-python manage.py migrate sessions
 ```
 
 ---
