@@ -45,9 +45,9 @@ WSGI_APPLICATION = 'hotel_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':   'hotel_db',
+        'NAME':   'hotel_management',
         'USER':   'root',
-        'PASSWORD': '',        # Thay bằng mật khẩu MySQL của bạn
+        'PASSWORD': '123456',        
         'HOST':   '127.0.0.1',
         'PORT':   '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
