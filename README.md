@@ -1,50 +1,53 @@
-# Web API Quan Ly Khach San - Nhom 4
+# Xây Dựng RESTful API Quản Lý Khách Sạn
 
-**Django + MySQL | Web API Backend | OOP + MVT | Test bang Postman**
+**Nhóm 04 - Python Django + MySQL**
 
-Du an thuoc **Chu de 2: Web Applications / Backend API Server / RESTful API Server**. He thong khong co frontend, cac chuc nang duoc cung cap qua API JSON.
-
----
-
-## Cong Nghe
-
-- Python
-- Django
-- MySQL
-- Session authentication
-- JSON API
+Dự án này được thực hiện theo yêu cầu đồ án môn học: xây dựng ứng dụng **Web API / Backend API Server / RESTful API Server**, không cần giao diện frontend. Hệ thống tập trung vào nghiệp vụ quản lý khách sạn: tài khoản, nhân viên, khách hàng, phòng, đặt phòng, dịch vụ, hóa đơn và thống kê.
 
 ---
 
-## Cai Dat & Chay
+## 1. Đáp Ứng Yêu Cầu Đồ Án
 
-```bash
-# 1. Cai thu vien
-pip install -r requirements.txt
-
-# 2. Tao CSDL va du lieu mau bang MySQL Workbench
-# Chay scripts/script_create_db_hotel_management.sql
-# Sau do chay scripts/script_insert_data_hotel_management.sql
-
-# 3. Cau hinh database trong hotel_management/settings.py
-
-# 4. Migrate
-python manage.py makemigrations
-python manage.py migrate
-
-# 5. Chay server
-python manage.py runserver
-```
-
-Base URL:
-
-```text
-http://127.0.0.1:8000/api/
-```
+| Yêu cầu của thầy | Phần đáp ứng trong dự án |
+|---|---|
+| Sử dụng ngôn ngữ Python | Dự án viết bằng Python |
+| Xây dựng Web API / Backend API Server | Sử dụng Django để tạo API JSON |
+| Không bắt buộc frontend | Dự án không xây dựng frontend, test bằng Postman |
+| Có cơ sở dữ liệu | Sử dụng MySQL, database `hotel_management` |
+| Số bảng CSDL từ 5 đến 10 | Có đúng 10 bảng chính |
+| Có tối thiểu 2 đối tượng người dùng | Có `quan_ly` và `le_tan` |
+| Có API đăng nhập, đăng ký | Có `/api/auth/login/`, `/api/auth/register/` |
+| Có REST API GET, POST, PUT, DELETE | Có đủ các method GET, POST, PUT, DELETE |
+| Có API thể hiện chức năng quan trọng | Có API đặt phòng, check-in, check-out, thanh toán, thống kê |
+| Kiểm thử API bằng Postman | Có file Postman collection theo luồng 12 API chính |
+| Áp dụng OOP / MVC hoặc MVT | Dùng Django MVT, models và service classes |
+| Có báo cáo, slide, source code, video demo | README này hỗ trợ chạy source và demo API |
 
 ---
 
-## Cau Truc Project
+## 2. Công Nghệ Sử Dụng
+
+| Thành phần | Công nghệ |
+|---|---|
+| Ngôn ngữ | Python |
+| Framework | Django |
+| Database | MySQL |
+| Kiến trúc | Django MVT |
+| API response | JSON |
+| Kiểm thử API | Postman |
+| Unit test | Django TestCase |
+
+Dự án dùng Django cơ bản theo phong cách trên lớp:
+
+- `django.views.View`
+- `JsonResponse`
+- `@csrf_exempt`
+- Tự đọc JSON request body
+- Không dùng Django REST Framework
+
+---
+
+## 3. Cấu Trúc Thư Mục
 
 ```text
 hotel_management/
@@ -60,6 +63,7 @@ hotel_management/
 │   │   ├── booking_service.py
 │   │   ├── invoice_service.py
 │   │   └── report_service.py
+│   ├── migrations/
 │   └── tests/
 ├── hotel_management/
 │   ├── settings.py
@@ -67,200 +71,396 @@ hotel_management/
 ├── scripts/
 │   ├── script_create_db_hotel_management.sql
 │   └── script_insert_data_hotel_management.sql
+├── postman/
+│   └── hotel_management_postman_collection.json
 ├── manage.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Co So Du Lieu
+## 4. Cơ Sở Dữ Liệu
 
 Database: `hotel_management`
 
-He thong gom 10 bang:
+Hệ thống gồm đúng **10 bảng**:
 
-| STT | Bang | Mo ta |
-|-----|------|-------|
-| 1 | `User` | Tai khoan dang nhap |
-| 2 | `Department` | Phong ban |
-| 3 | `Employee` | Nhan vien |
-| 4 | `Customer` | Khach hang |
-| 5 | `RoomType` | Loai phong |
-| 6 | `Room` | Phong |
-| 7 | `Booking` | Dat phong |
-| 8 | `Invoice` | Hoa don |
-| 9 | `Service` | Dich vu |
-| 10 | `BookingService` | Dich vu su dung theo booking |
+| STT | Bảng | Mô tả |
+|---|---|---|
+| 1 | `User` | Tài khoản đăng nhập, phân quyền |
+| 2 | `Department` | Phòng ban trong khách sạn |
+| 3 | `Employee` | Hồ sơ nhân viên |
+| 4 | `Customer` | Thông tin khách hàng |
+| 5 | `RoomType` | Loại phòng và giá phòng |
+| 6 | `Room` | Phòng khách sạn |
+| 7 | `Booking` | Thông tin đặt phòng |
+| 8 | `Invoice` | Hóa đơn thanh toán |
+| 9 | `Service` | Dịch vụ khách sạn |
+| 10 | `BookingService` | Dịch vụ sử dụng theo từng booking |
 
-Tien te su dung: VND.
+Quan hệ chính:
+
+```text
+User 1 - 1 Employee
+Department 1 - n Employee
+RoomType 1 - n Room
+Customer 1 - n Booking
+Room 1 - n Booking
+Employee 1 - n Booking
+Booking 1 - 1 Invoice
+Booking 1 - n BookingService
+Service 1 - n BookingService
+```
+
+Tiền tệ sử dụng trong hệ thống: **VND**.
 
 ---
 
-## Phan Quyen
+## 5. Đối Tượng Người Dùng Và Phân Quyền
 
-| Role | Mo ta |
-|------|-------|
-| `quan_ly` | Quan ly, co quyen quan tri va xem bao cao |
-| `le_tan` | Le tan/nhan vien, thao tac nghiep vu khach san |
-| Guest | Chua dang nhap, chi dung duoc API dang ky/dang nhap |
+| Role | Mô tả | Quyền chính |
+|---|---|---|
+| `quan_ly` | Quản lý | Quản lý user, nhân viên, phòng ban, danh mục, xem báo cáo |
+| `le_tan` | Lễ tân / nhân viên | Quản lý khách hàng, phòng, booking, dịch vụ, hóa đơn |
+| Guest | Chưa đăng nhập | Đăng ký, đăng nhập |
 
-Tai khoan mau:
+Tài khoản mẫu:
 
 | Role | Username | Password |
-|------|----------|----------|
+|---|---|---|
 | `quan_ly` | `ql001` | `123456` |
 | `le_tan` | `lt001` | `123456` |
 
 ---
 
-## Full API
+## 6. Số Lượng API
 
-### 1. Xac Thuc
+Dự án có:
 
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| POST | `/api/auth/register/` | Dang ky tai khoan moi | Guest |
-| POST | `/api/auth/login/` | Dang nhap | Guest |
-| POST | `/api/auth/logout/` | Dang xuat | Dang nhap |
-| GET | `/api/auth/profile/` | Xem ho so ca nhan | Dang nhap |
-| PUT | `/api/auth/profile/` | Cap nhat ho so ca nhan | Dang nhap |
-| PUT | `/api/auth/change-password/` | Doi mat khau | Dang nhap |
+```text
+36 endpoint
+64 thao tác API theo method + endpoint
+```
 
-### 2. User
+Thống kê theo method:
 
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/users/` | Danh sach tai khoan | `quan_ly` |
-| POST | `/api/users/` | Tao tai khoan | `quan_ly` |
-| GET | `/api/users/<id>/` | Chi tiet tai khoan | `quan_ly` |
-| PUT | `/api/users/<id>/` | Cap nhat tai khoan | `quan_ly` |
-| DELETE | `/api/users/<id>/` | Vo hieu hoa tai khoan | `quan_ly` |
+| Method | Số lượng |
+|---|---:|
+| GET | 25 |
+| POST | 13 |
+| PUT | 17 |
+| DELETE | 9 |
+| Tổng | 64 |
 
-### 3. Department
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/departments/` | Danh sach phong ban | Dang nhap |
-| POST | `/api/departments/` | Them phong ban | `quan_ly` |
-| GET | `/api/departments/<id>/` | Chi tiet phong ban | Dang nhap |
-| PUT | `/api/departments/<id>/` | Cap nhat phong ban | `quan_ly` |
-| DELETE | `/api/departments/<id>/` | Xoa phong ban | `quan_ly` |
-
-### 4. Employee
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/employees/` | Danh sach nhan vien | Dang nhap |
-| POST | `/api/employees/` | Them nhan vien | `quan_ly` |
-| GET | `/api/employees/<id>/` | Chi tiet nhan vien | Dang nhap |
-| PUT | `/api/employees/<id>/` | Cap nhat nhan vien | `quan_ly` |
-| DELETE | `/api/employees/<id>/` | Vo hieu hoa nhan vien | `quan_ly` |
-
-### 5. Customer
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/customers/` | Danh sach khach hang | Dang nhap |
-| GET | `/api/customers/?customer_type=vip` | Loc khach VIP | Dang nhap |
-| GET | `/api/customers/?phone=0901` | Tim theo so dien thoai | Dang nhap |
-| POST | `/api/customers/` | Them khach hang | Dang nhap |
-| GET | `/api/customers/<id>/` | Chi tiet khach hang | Dang nhap |
-| PUT | `/api/customers/<id>/` | Cap nhat khach hang | Dang nhap |
-| DELETE | `/api/customers/<id>/` | Xoa khach hang | `quan_ly` |
-
-### 6. Room Type
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/room-types/` | Danh sach loai phong | Dang nhap |
-| POST | `/api/room-types/` | Them loai phong | `quan_ly` |
-| GET | `/api/room-types/<id>/` | Chi tiet loai phong | Dang nhap |
-| PUT | `/api/room-types/<id>/` | Cap nhat loai phong | `quan_ly` |
-| DELETE | `/api/room-types/<id>/` | Xoa loai phong | `quan_ly` |
-
-### 7. Room
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/rooms/` | Danh sach phong | Dang nhap |
-| GET | `/api/rooms/?status=trong` | Loc phong theo trang thai | Dang nhap |
-| POST | `/api/rooms/` | Them phong | `quan_ly` |
-| GET | `/api/rooms/<id>/` | Chi tiet phong | Dang nhap |
-| PUT | `/api/rooms/<id>/` | Cap nhat phong | `quan_ly` |
-| DELETE | `/api/rooms/<id>/` | Xoa phong | `quan_ly` |
-| PUT | `/api/rooms/<id>/status/` | Cap nhat trang thai phong | Dang nhap |
-
-### 8. Service
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/services/` | Danh sach dich vu dang hoat dong | Dang nhap |
-| POST | `/api/services/` | Them dich vu | `quan_ly` |
-| GET | `/api/services/<id>/` | Chi tiet dich vu | Dang nhap |
-| PUT | `/api/services/<id>/` | Cap nhat dich vu | `quan_ly` |
-| DELETE | `/api/services/<id>/` | Xoa mem dich vu | `quan_ly` |
-
-### 9. Booking
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/bookings/` | Danh sach dat phong | Dang nhap |
-| GET | `/api/bookings/?status=cho_xac_nhan` | Loc dat phong theo trang thai | Dang nhap |
-| POST | `/api/bookings/` | Tao dat phong | Dang nhap |
-| GET | `/api/bookings/<id>/` | Chi tiet dat phong | Dang nhap |
-| PUT | `/api/bookings/<id>/` | Cap nhat ghi chu dat phong | Dang nhap |
-| DELETE | `/api/bookings/<id>/` | Huy dat phong | Dang nhap |
-| PUT | `/api/bookings/<id>/confirm/` | Xac nhan dat phong | Dang nhap |
-| PUT | `/api/bookings/<id>/cancel/` | Huy dat phong | Dang nhap |
-| PUT | `/api/bookings/<id>/check-in/` | Check-in | Dang nhap |
-| PUT | `/api/bookings/<id>/check-out/` | Check-out | Dang nhap |
-| GET | `/api/bookings/<id>/services/` | Danh sach dich vu cua booking | Dang nhap |
-| POST | `/api/bookings/<id>/services/` | Them dich vu cho booking | Dang nhap |
-| GET | `/api/bookings/<id>/invoice/` | Xem hoa don theo booking | Dang nhap |
-
-### 10. Booking Service
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| PUT | `/api/booking-services/<id>/` | Cap nhat so luong dich vu | Dang nhap |
-| DELETE | `/api/booking-services/<id>/` | Xoa dich vu khoi booking | Dang nhap |
-
-### 11. Invoice
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/invoices/` | Danh sach hoa don | Dang nhap |
-| POST | `/api/invoices/` | Tao hoa don thu cong | Dang nhap |
-| GET | `/api/invoices/<id>/` | Chi tiet hoa don | Dang nhap |
-| PUT | `/api/invoices/<id>/pay/` | Thanh toan hoa don | Dang nhap |
-
-### 12. Report
-
-| Method | Endpoint | Mo ta | Quyen |
-|--------|----------|-------|-------|
-| GET | `/api/reports/revenue/` | Thong ke doanh thu | `quan_ly` |
-| GET | `/api/reports/revenue/?tu_ngay=2026-05-01&den_ngay=2026-05-31` | Thong ke doanh thu theo ngay | `quan_ly` |
-| GET | `/api/reports/room-status/` | Thong ke trang thai phong | `quan_ly` |
-| GET | `/api/reports/booking-statistics/` | Thong ke dat phong | `quan_ly` |
-| GET | `/api/reports/booking-statistics/?tu_ngay=2026-05-01&den_ngay=2026-05-31` | Thong ke dat phong theo ngay | `quan_ly` |
-| GET | `/api/reports/top-services/` | Top dich vu duoc su dung nhieu | `quan_ly` |
-| GET | `/api/reports/top-services/?top=3` | Top N dich vu | `quan_ly` |
+Postman collection tập trung vào **12 API theo luồng nghiệp vụ chính** để chụp hình và đưa vào báo cáo.
 
 ---
 
-## Body Mau
+## 7. Full Danh Sách API
 
-### Dang Ky
+### 7.1. Auth
 
-```json
-{
-  "username": "user01",
-  "password": "123456",
-  "email": "user01@hotel.vn"
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| POST | `/api/auth/register/` | Đăng ký tài khoản |
+| POST | `/api/auth/login/` | Đăng nhập |
+| POST | `/api/auth/logout/` | Đăng xuất |
+| GET | `/api/auth/profile/` | Xem hồ sơ cá nhân |
+| PUT | `/api/auth/profile/` | Cập nhật hồ sơ cá nhân |
+| PUT | `/api/auth/change-password/` | Đổi mật khẩu |
+
+### 7.2. User
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/users/` | Xem danh sách tài khoản |
+| POST | `/api/users/` | Tạo tài khoản |
+| GET | `/api/users/<id>/` | Xem chi tiết tài khoản |
+| PUT | `/api/users/<id>/` | Cập nhật tài khoản |
+| DELETE | `/api/users/<id>/` | Vô hiệu hóa tài khoản |
+
+### 7.3. Department
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/departments/` | Xem danh sách phòng ban |
+| POST | `/api/departments/` | Thêm phòng ban |
+| GET | `/api/departments/<id>/` | Xem chi tiết phòng ban |
+| PUT | `/api/departments/<id>/` | Cập nhật phòng ban |
+| DELETE | `/api/departments/<id>/` | Xóa phòng ban |
+
+### 7.4. Employee
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/employees/` | Xem danh sách nhân viên |
+| POST | `/api/employees/` | Thêm nhân viên |
+| GET | `/api/employees/<id>/` | Xem chi tiết nhân viên |
+| PUT | `/api/employees/<id>/` | Cập nhật nhân viên |
+| DELETE | `/api/employees/<id>/` | Vô hiệu hóa nhân viên |
+
+### 7.5. Customer
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/customers/` | Xem danh sách khách hàng |
+| GET | `/api/customers/?customer_type=vip` | Lọc khách VIP |
+| GET | `/api/customers/?phone=0901` | Tìm khách theo số điện thoại |
+| POST | `/api/customers/` | Thêm khách hàng |
+| GET | `/api/customers/<id>/` | Xem chi tiết khách hàng |
+| PUT | `/api/customers/<id>/` | Cập nhật khách hàng |
+| DELETE | `/api/customers/<id>/` | Xóa khách hàng |
+
+### 7.6. Room Type
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/room-types/` | Xem danh sách loại phòng |
+| POST | `/api/room-types/` | Thêm loại phòng |
+| GET | `/api/room-types/<id>/` | Xem chi tiết loại phòng |
+| PUT | `/api/room-types/<id>/` | Cập nhật loại phòng |
+| DELETE | `/api/room-types/<id>/` | Xóa loại phòng |
+
+### 7.7. Room
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/rooms/` | Xem danh sách phòng |
+| GET | `/api/rooms/?status=trong` | Lọc phòng theo trạng thái |
+| POST | `/api/rooms/` | Thêm phòng |
+| GET | `/api/rooms/<id>/` | Xem chi tiết phòng |
+| PUT | `/api/rooms/<id>/` | Cập nhật phòng |
+| DELETE | `/api/rooms/<id>/` | Xóa phòng |
+| PUT | `/api/rooms/<id>/status/` | Cập nhật trạng thái phòng |
+
+### 7.8. Service
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/services/` | Xem danh sách dịch vụ |
+| POST | `/api/services/` | Thêm dịch vụ |
+| GET | `/api/services/<id>/` | Xem chi tiết dịch vụ |
+| PUT | `/api/services/<id>/` | Cập nhật dịch vụ |
+| DELETE | `/api/services/<id>/` | Xóa mềm dịch vụ |
+
+### 7.9. Booking
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/bookings/` | Xem danh sách đặt phòng |
+| GET | `/api/bookings/?status=cho_xac_nhan` | Lọc booking theo trạng thái |
+| POST | `/api/bookings/` | Tạo đặt phòng |
+| GET | `/api/bookings/<id>/` | Xem chi tiết đặt phòng |
+| PUT | `/api/bookings/<id>/` | Cập nhật ghi chú đặt phòng |
+| DELETE | `/api/bookings/<id>/` | Hủy đặt phòng |
+| PUT | `/api/bookings/<id>/confirm/` | Xác nhận đặt phòng |
+| PUT | `/api/bookings/<id>/cancel/` | Hủy đặt phòng |
+| PUT | `/api/bookings/<id>/check-in/` | Check-in |
+| PUT | `/api/bookings/<id>/check-out/` | Check-out |
+| GET | `/api/bookings/<id>/services/` | Xem dịch vụ của booking |
+| POST | `/api/bookings/<id>/services/` | Thêm dịch vụ cho booking |
+| GET | `/api/bookings/<id>/invoice/` | Xem hóa đơn theo booking |
+
+### 7.10. Booking Service
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| PUT | `/api/booking-services/<id>/` | Cập nhật số lượng dịch vụ |
+| DELETE | `/api/booking-services/<id>/` | Xóa dịch vụ khỏi booking |
+
+### 7.11. Invoice
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/invoices/` | Xem danh sách hóa đơn |
+| POST | `/api/invoices/` | Tạo hóa đơn thủ công |
+| GET | `/api/invoices/<id>/` | Xem chi tiết hóa đơn |
+| PUT | `/api/invoices/<id>/pay/` | Thanh toán hóa đơn |
+
+### 7.12. Report
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/api/reports/revenue/` | Thống kê doanh thu |
+| GET | `/api/reports/revenue/?tu_ngay=2026-05-01&den_ngay=2026-05-31` | Thống kê doanh thu theo ngày |
+| GET | `/api/reports/room-status/` | Thống kê tình trạng phòng |
+| GET | `/api/reports/booking-statistics/` | Thống kê đặt phòng |
+| GET | `/api/reports/booking-statistics/?tu_ngay=2026-05-01&den_ngay=2026-05-31` | Thống kê đặt phòng theo ngày |
+| GET | `/api/reports/top-services/` | Thống kê dịch vụ sử dụng nhiều |
+| GET | `/api/reports/top-services/?top=3` | Top N dịch vụ |
+
+---
+
+## 8. Kịch Bản Postman 12 API Chính
+
+| Bước | Method | Endpoint | Chức năng |
+|---:|---|---|---|
+| 1 | POST | `/api/auth/login/` | Đăng nhập |
+| 2 | GET | `/api/rooms/?status=trong` | Tìm phòng trống |
+| 3 | POST | `/api/customers/` | Thêm khách hàng |
+| 4 | POST | `/api/bookings/` | Tạo đặt phòng |
+| 5 | PUT | `/api/bookings/<id>/confirm/` | Xác nhận đặt phòng |
+| 6 | PUT | `/api/bookings/<id>/check-in/` | Check-in |
+| 7 | POST | `/api/bookings/<id>/services/` | Ghi nhận dịch vụ khách sử dụng |
+| 8 | PUT | `/api/bookings/<id>/check-out/` | Check-out |
+| 9 | GET | `/api/bookings/<id>/invoice/` | Xem hóa đơn theo đặt phòng |
+| 10 | PUT | `/api/invoices/<id>/pay/` | Thanh toán hóa đơn |
+| 11 | GET | `/api/reports/revenue/` | Thống kê doanh thu |
+| 12 | POST | `/api/auth/logout/` | Đăng xuất |
+
+---
+
+## 9. Luồng Nghiệp Vụ Demo Chính
+
+Luồng nên demo bằng Postman:
+
+```text
+1. Đăng nhập
+2. Xem phòng trống
+3. Thêm khách hàng
+4. Tạo đặt phòng
+5. Xác nhận đặt phòng
+6. Check-in
+7. Ghi nhận dịch vụ
+8. Check-out
+9. Xem hóa đơn
+10. Thanh toán hóa đơn
+11. Xem thống kê doanh thu
+12. Đăng xuất
+```
+
+Luồng này thể hiện đủ quy trình khách sạn:
+
+```text
+tìm phòng -> đặt phòng -> nhận phòng -> dùng dịch vụ -> trả phòng -> thanh toán -> thống kê
+```
+
+---
+
+## 10. Cài Đặt Môi Trường
+
+```bash
+pip install -r requirements.txt
+```
+
+File `requirements.txt`:
+
+```text
+django>=4.2
+mysqlclient>=2.2
+```
+
+---
+
+## 11. Tạo Database Và Dữ Liệu Mẫu
+
+Cách 1: Chạy script SQL trong MySQL Workbench:
+
+```text
+scripts/script_create_db_hotel_management.sql
+scripts/script_insert_data_hotel_management.sql
+```
+
+Cách 2: Dùng Django migration:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+Nếu dùng session đăng nhập, cần đảm bảo bảng `django_session` đã được tạo:
+
+```bash
+python manage.py migrate sessions
+```
+
+---
+
+## 12. Cấu Hình Database
+
+Kiểm tra file:
+
+```text
+hotel_management/settings.py
+```
+
+Phần database:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hotel_management',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
 }
 ```
 
-### Dang Nhap
+Nếu máy khác có mật khẩu MySQL khác, sửa lại `PASSWORD`.
+
+---
+
+## 13. Chạy Server
+
+```bash
+cd /d E:\DA_Python\Nhom04_Code\hotel_management
+python manage.py runserver 127.0.0.1:8000 --noreload
+```
+
+Base URL:
+
+```text
+http://127.0.0.1:8000
+```
+
+Base API:
+
+```text
+http://127.0.0.1:8000/api/
+```
+
+Khi test bằng Postman, phải giữ terminal đang chạy server. Nếu tắt terminal, Postman sẽ báo:
+
+```text
+ECONNREFUSED 127.0.0.1:8000
+```
+
+---
+
+## 14. Kiểm Thử Bằng Postman
+
+File collection:
+
+```text
+postman/hotel_management_postman_collection.json
+```
+
+Cách dùng:
+
+1. Import file JSON vào Postman.
+2. Kiểm tra collection variable:
+
+```text
+base_url = http://127.0.0.1:8000
+```
+
+3. Chạy request:
+
+```text
+01 - Dang nhap he thong
+```
+
+4. Sau khi đăng nhập thành công, chạy các API còn lại.
+
+---
+
+## 15. Body Mẫu
+
+Đăng nhập:
 
 ```json
 {
@@ -269,118 +469,32 @@ Tai khoan mau:
 }
 ```
 
-### Doi Mat Khau
+Thêm khách hàng:
 
 ```json
 {
-  "old_password": "123456",
-  "new_password": "654321"
-}
-```
-
-### Tao Tai Khoan
-
-```json
-{
-  "username": "lt007",
-  "password": "123456",
-  "email": "lt007@hotel.vn",
-  "role": "le_tan"
-}
-```
-
-### Them Phong Ban
-
-```json
-{
-  "name": "Le tan",
-  "description": "Tiep nhan khach va xu ly dat phong"
-}
-```
-
-### Them Nhan Vien
-
-```json
-{
-  "username": "lt008",
-  "password": "123456",
-  "email": "lt008@hotel.vn",
-  "department_id": 2,
-  "full_name": "Nguyen Van A",
-  "phone": "0901000008",
-  "salary": 9000000,
-  "hire_date": "2026-05-24",
-  "shift": "sang"
-}
-```
-
-### Them Khach Hang
-
-```json
-{
-  "full_name": "Nguyen Van B",
-  "phone": "0911000011",
-  "email": "nguyenvanb@gmail.com",
-  "id_card": "079206000011",
+  "full_name": "Khach Hang Postman",
+  "phone": "0911999001",
+  "email": "postman.customer@hotel.vn",
+  "id_card": "079206099001",
   "address": "TP. Ho Chi Minh",
   "customer_type": "regular"
 }
 ```
 
-### Them Loai Phong
-
-```json
-{
-  "name": "Family",
-  "price_per_night": 1200000,
-  "capacity": 4,
-  "description": "Phong cho gia dinh"
-}
-```
-
-### Them Phong
-
-```json
-{
-  "room_type_id": 1,
-  "room_number": "105",
-  "floor": 1,
-  "status": "trong"
-}
-```
-
-### Cap Nhat Trang Thai Phong
-
-```json
-{
-  "status": "bao_tri"
-}
-```
-
-### Them Dich Vu
-
-```json
-{
-  "name": "An sang buffet",
-  "price": 150000,
-  "description": "Buffet sang",
-  "is_active": true
-}
-```
-
-### Tao Dat Phong
+Tạo đặt phòng:
 
 ```json
 {
   "customer_id": 1,
-  "room_id": 1,
-  "check_in": "2026-06-10",
-  "check_out": "2026-06-13",
-  "note": "Khach yeu cau phong yen tinh"
+  "room_id": 16,
+  "check_in": "2028-08-10",
+  "check_out": "2028-08-13",
+  "note": "Dat phong bang Postman"
 }
 ```
 
-### Them Dich Vu Cho Booking
+Thêm dịch vụ cho booking:
 
 ```json
 {
@@ -389,15 +503,7 @@ Tai khoan mau:
 }
 ```
 
-### Tao Hoa Don Thu Cong
-
-```json
-{
-  "booking_id": 1
-}
-```
-
-### Thanh Toan Hoa Don
+Thanh toán hóa đơn:
 
 ```json
 {
@@ -407,24 +513,46 @@ Tai khoan mau:
 
 ---
 
-## Kiem Thu
+## 16. Chạy Unit Test
 
 ```bash
 python manage.py test
 ```
 
-Hoac chay rieng:
+Kết quả đã kiểm tra:
 
-```bash
-python manage.py test hotel.tests.test_views
-python manage.py test hotel.tests.test_services
+```text
+Found 117 test(s)
+Ran 117 tests
+OK
 ```
 
 ---
 
-## Ghi Chu
+## 17. Ghi Chú Khi Nộp Bài
 
-- API tra ve du lieu dang JSON.
-- He thong su dung session de luu trang thai dang nhap.
-- Cac API can quyen se tra ve `401` neu chua dang nhap va `403` neu khong du quyen.
-- Mat khau trong du an demo dang luu truc tiep theo yeu cau don gian cua do an.
+Theo yêu cầu môn học, các sản phẩm cần nộp gồm:
+
+| Sản phẩm | Ghi chú |
+|---|---|
+| File báo cáo Word | Theo mẫu của thầy |
+| File báo cáo PDF | Xuất từ file Word |
+| Source code | Nộp code dự án |
+| Slide thuyết trình | Trình bày ngắn gọn, rõ ràng |
+| Video thuyết trình/demo | Quay màn hình, thấy mặt thành viên |
+
+Nếu file lớn hơn giới hạn upload, đưa link Google Drive và bật quyền:
+
+```text
+Anyone with the link can view/download
+```
+
+---
+
+## 18. Ghi Chú Kỹ Thuật
+
+- Project dùng session để lưu trạng thái đăng nhập.
+- API cần đăng nhập sẽ trả `401` nếu chưa login.
+- API cần quyền quản lý sẽ trả `403` nếu sai role.
+- Password đang lưu trực tiếp để đơn giản cho đồ án môn học.
+- Tiền tệ trong hệ thống tính bằng VND.

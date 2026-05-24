@@ -1,40 +1,37 @@
-"""
-URL – Toàn bộ API endpoint của hệ thống Quản lý Khách sạn
-28 chức năng, cấu trúc RESTful chuẩn
-"""
+"""Khai bao cac API cua app hotel."""
 from django.urls import path
 from . import views
 
 urlpatterns = [
 
-    # ── Auth ──────────────────────────────────────────────────────
+    # Auth
     path('auth/register/',       views.AuthView.as_view()),       # POST
     path('auth/login/',          views.AuthView.as_view()),       # POST
     path('auth/logout/',         views.AuthView.as_view()),       # POST
     path('auth/profile/',        views.AuthView.as_view()),       # GET | PUT
     path('auth/change-password/',views.AuthView.as_view()),       # PUT
 
-    # ── User ──────────────────────────────────────────────────────
+    # User
     path('users/',               views.UserView.as_view()),       # GET | POST
     path('users/<int:pk>/',      views.UserView.as_view()),       # GET | PUT | DELETE
 
-    # ── Department ────────────────────────────────────────────────
+    # Department
     path('departments/',         views.DepartmentView.as_view()), # GET | POST
     path('departments/<int:pk>/',views.DepartmentView.as_view()), # GET | PUT | DELETE
 
-    # ── Employee ──────────────────────────────────────────────────
+    # Employee
     path('employees/',           views.EmployeeView.as_view()),   # GET | POST
     path('employees/<int:pk>/',  views.EmployeeView.as_view()),   # GET | PUT | DELETE
 
-    # ── Customer ──────────────────────────────────────────────────
+    # Customer
     path('customers/',           views.CustomerView.as_view()),   # GET | POST
     path('customers/<int:pk>/',  views.CustomerView.as_view()),   # GET | PUT | DELETE
 
-    # ── Room Type ─────────────────────────────────────────────────
+    # Room type
     path('room-types/',          views.RoomTypeView.as_view()),   # GET | POST
     path('room-types/<int:pk>/', views.RoomTypeView.as_view()),   # GET | PUT | DELETE
 
-    # ── Room ──────────────────────────────────────────────────────
+    # Room
     path('rooms/',               views.RoomView.as_view()),       # GET | POST
     path('rooms/<int:pk>/',      views.RoomView.as_view()),       # GET | PUT | DELETE
     path('rooms/<int:pk>/status/',views.RoomStatusView.as_view()),# PUT
@@ -43,7 +40,7 @@ urlpatterns = [
     path('services/',             views.ServiceView.as_view()),    # GET | POST
     path('services/<int:pk>/',    views.ServiceView.as_view()),    # GET | PUT | DELETE
 
-    # ── Booking ───────────────────────────────────────────────────
+    # Booking
     path('bookings/',            views.BookingView.as_view()),    # GET | POST
     path('bookings/<int:pk>/',   views.BookingView.as_view()),    # GET | PUT | DELETE
     path('bookings/<int:pk>/confirm/',  views.BookingConfirmView.as_view()),  # PUT
@@ -53,15 +50,15 @@ urlpatterns = [
     path('bookings/<int:pk>/services/', views.BookingServiceView.as_view()),  # GET | POST
     path('bookings/<int:pk>/invoice/',  views.InvoiceByBookingView.as_view()),# GET
 
-    # ── Booking Service ───────────────────────────────────────────
+    # Booking service
     path('booking-services/<int:pk>/', views.BookingServiceDetailView.as_view()), # PUT | DELETE
 
-    # ── Invoice ───────────────────────────────────────────────────
+    # Invoice
     path('invoices/',            views.InvoiceView.as_view()),    # GET | POST
     path('invoices/<int:pk>/',   views.InvoiceView.as_view()),    # GET
     path('invoices/<int:pk>/pay/',views.InvoicePayView.as_view()),# PUT
 
-    # ── Reports ───────────────────────────────────────────────────
+    # Report
     path('reports/revenue/',             views.ReportView.as_view()),  # GET
     path('reports/room-status/',         views.ReportView.as_view()),  # GET
     path('reports/booking-statistics/',  views.ReportView.as_view()),  # GET

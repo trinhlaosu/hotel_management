@@ -1,10 +1,8 @@
-"""
-core/validators.py – Kiểm tra dữ liệu đầu vào
-"""
+"""Cac ham kiem tra du lieu dau vao."""
 
 
 def kiem_tra_truong_bat_buoc(data, ds_truong):
-    """Kiểm tra các trường bắt buộc có đủ không"""
+    """Kiem tra cac truong bat buoc."""
     for truong in ds_truong:
         if not data.get(truong):
             return False, f'Thiếu trường bắt buộc: {truong}'
@@ -12,7 +10,7 @@ def kiem_tra_truong_bat_buoc(data, ds_truong):
 
 
 def kiem_tra_ngay(check_in, check_out):
-    """Kiểm tra check_out phải sau check_in"""
+    """Kiem tra ngay tra phong sau ngay nhan phong."""
     from datetime import date
     try:
         ci = date.fromisoformat(str(check_in))

@@ -1,12 +1,10 @@
-"""
-core/utils.py – Tiện ích dùng chung cho toàn hệ thống
-"""
+"""Ham tien ich dung chung."""
 import json
 from django.http import JsonResponse
 
 
 def phan_hoi(data=None, message='', status=200, error=''):
-    """Chuẩn hóa định dạng JSON trả về"""
+    """Tra ve JSON theo mot mau chung."""
     body = {}
     if message:
         body['message'] = message
@@ -18,7 +16,7 @@ def phan_hoi(data=None, message='', status=200, error=''):
 
 
 def doc_json(request):
-    """Đọc body JSON từ request"""
+    """Doc JSON tu request body."""
     try:
         return json.loads(request.body), None
     except Exception:
@@ -26,7 +24,7 @@ def doc_json(request):
 
 
 def lay_user_hien_tai(request):
-    """Lấy user đang đăng nhập từ session"""
+    """Lay user hien tai tu session."""
     from hotel.models import User
     user_id = request.session.get('user_id')
     if not user_id:
@@ -38,11 +36,7 @@ def lay_user_hien_tai(request):
 
 
 def kiem_tra_role(request, ds_role):
-    """
-    Kiểm tra người dùng có role hợp lệ không.
-    Trả về (user, None) nếu hợp lệ.
-    Trả về (None, JsonResponse lỗi) nếu không hợp lệ.
-    """
+    """Kiem tra user co dung quyen khong."""
     user = lay_user_hien_tai(request)
     if not user:
         return None, phan_hoi(error='Chưa đăng nhập', status=401)
@@ -52,7 +46,7 @@ def kiem_tra_role(request, ds_role):
 
 
 def yeu_cau_dang_nhap(request):
-    """Chỉ cần đăng nhập, không kiểm tra role"""
+    """Kiem tra user da dang nhap."""
     user = lay_user_hien_tai(request)
     if not user:
         return None, phan_hoi(error='Chưa đăng nhập', status=401)

@@ -1,0 +1,423 @@
+{
+  "info": {
+    "_postman_id": "78f2fcb5-9f24-4c74-84b0-40f5a4ec9d2f",
+    "name": "Hotel Management - Kich Ban Chuc Nang Chinh",
+    "description": "Kich ban demo de dua vao bao cao: dang nhap -> tim phong -> them khach -> dat phong -> xac nhan -> check-in -> them dich vu -> check-out -> xem hoa don -> thanh toan -> thong ke -> dang xuat.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Dang nhap he thong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Dang nhap thanh cong', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/login/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login",
+            ""
+          ]
+        },
+        "description": "Buoc 1: Quan ly dang nhap de su dung cac API can quyen."
+      }
+    },
+    {
+      "name": "02 - Tim phong trong",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/rooms/?status=trong",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "rooms",
+            ""
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "trong"
+            }
+          ]
+        },
+        "description": "Buoc 2: Le tan/quan ly tim danh sach phong trong de dat phong."
+      }
+    },
+    {
+      "name": "03 - Them khach hang",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffix = Date.now().toString().slice(-8);",
+              "pm.collectionVariables.set('new_customer_phone', '09' + suffix);",
+              "pm.collectionVariables.set('new_customer_id_card', '0792' + suffix);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Them khach hang thanh cong', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.collectionVariables.set('customer_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"full_name\": \"Khach Demo Postman\",\n  \"phone\": \"{{new_customer_phone}}\",\n  \"email\": \"demo.postman@hotel.vn\",\n  \"id_card\": \"{{new_customer_id_card}}\",\n  \"address\": \"TP. Ho Chi Minh\",\n  \"customer_type\": \"regular\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/customers/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "customers",
+            ""
+          ]
+        },
+        "description": "Buoc 3: Tao khach hang moi. Request tu dong tao phone/id_card khac nhau de tranh trung du lieu."
+      }
+    },
+    {
+      "name": "04 - Tao dat phong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Tao dat phong thanh cong', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.collectionVariables.set('booking_id', json.data.booking_id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customer_id\": {{customer_id}},\n  \"room_id\": {{room_id}},\n  \"check_in\": \"{{check_in}}\",\n  \"check_out\": \"{{check_out}}\",\n  \"note\": \"Dat phong demo bang Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/bookings/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            ""
+          ]
+        },
+        "description": "Buoc 4: Tao dat phong. He thong kiem tra trung lich va tu tao hoa don ban dau."
+      }
+    },
+    {
+      "name": "05 - Xac nhan dat phong",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/confirm/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "confirm",
+            ""
+          ]
+        },
+        "description": "Buoc 5: Chuyen booking tu cho_xac_nhan sang da_xac_nhan."
+      }
+    },
+    {
+      "name": "06 - Check-in",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/check-in/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "check-in",
+            ""
+          ]
+        },
+        "description": "Buoc 6: Khach nhan phong. Booking chuyen sang dang_o va phong chuyen sang co_khach."
+      }
+    },
+    {
+      "name": "07 - Ghi nhan dich vu",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"service_id\": {{service_id}},\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/services/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "services",
+            ""
+          ]
+        },
+        "description": "Buoc 7: Ghi nhan dich vu khach su dung va cap nhat tien dich vu vao hoa don."
+      }
+    },
+    {
+      "name": "08 - Check-out",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/check-out/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "check-out",
+            ""
+          ]
+        },
+        "description": "Buoc 8: Khach tra phong. Booking chuyen sang da_tra_phong va phong tro ve trong."
+      }
+    },
+    {
+      "name": "09 - Xem hoa don theo booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Lay hoa don thanh cong', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.collectionVariables.set('invoice_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/invoice/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "invoice",
+            ""
+          ]
+        },
+        "description": "Buoc 9: Xem hoa don cua booking, lay invoice_id de thanh toan."
+      }
+    },
+    {
+      "name": "10 - Thanh toan hoa don",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"payment_method\": \"chuyen_khoan\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/invoices/{{invoice_id}}/pay/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "invoices",
+            "{{invoice_id}}",
+            "pay",
+            ""
+          ]
+        },
+        "description": "Buoc 10: Thanh toan hoa don, cap nhat trang thai da_thanh_toan."
+      }
+    },
+    {
+      "name": "11 - Thong ke doanh thu",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/reports/revenue/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "reports",
+            "revenue",
+            ""
+          ]
+        },
+        "description": "Buoc 11: Quan ly xem doanh thu tu cac hoa don da thanh toan."
+      }
+    },
+    {
+      "name": "12 - Dang xuat",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/auth/logout/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "logout",
+            ""
+          ]
+        },
+        "description": "Buoc 12: Dang xuat va xoa session."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "admin_username",
+      "value": "ql001"
+    },
+    {
+      "key": "admin_password",
+      "value": "123456"
+    },
+    {
+      "key": "customer_id",
+      "value": "1"
+    },
+    {
+      "key": "new_customer_phone",
+      "value": "0911999001"
+    },
+    {
+      "key": "new_customer_id_card",
+      "value": "079206099001"
+    },
+    {
+      "key": "room_id",
+      "value": "16"
+    },
+    {
+      "key": "booking_id",
+      "value": "1"
+    },
+    {
+      "key": "invoice_id",
+      "value": "1"
+    },
+    {
+      "key": "service_id",
+      "value": "1"
+    },
+    {
+      "key": "check_in",
+      "value": "2028-08-10"
+    },
+    {
+      "key": "check_out",
+      "value": "2028-08-13"
+    }
+  ]
+}
