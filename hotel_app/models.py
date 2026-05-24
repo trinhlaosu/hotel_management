@@ -251,3 +251,4 @@ class BookingService(models.Model):
     def __str__(self):
         return str([self.id, self.booking_id, self.service_id,
                     self.quantity, float(self.subtotal)])
+

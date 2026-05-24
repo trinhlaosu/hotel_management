@@ -20,3 +20,4 @@ def kiem_tra_ngay(check_in, check_out):
         return True, ''
     except ValueError:
         return False, 'Định dạng ngày không hợp lệ (YYYY-MM-DD)'
+

@@ -10,10 +10,12 @@ class ABCReportService(ABC):
 
     @abstractmethod
     def thong_ke_doanh_thu(self, tu_ngay=None, den_ngay=None):
+        # Tinh tong doanh thu tu cac hoa don da thanh toan, co the loc theo ngay.
         pass
 
     @abstractmethod
     def thong_ke_trang_thai_phong(self):
+        # Dem so phong theo tung trang thai hien tai.
         pass
 
 
@@ -22,7 +24,7 @@ class ReportService(ABCReportService):
 
     def thong_ke_doanh_thu(self, tu_ngay=None, den_ngay=None):
         """Thống kê tổng doanh thu và số hóa đơn đã thanh toán"""
-        from hotel.models import Invoice
+        from hotel_app.models import Invoice
         from django.db.models import Sum
 
         qs = Invoice.objects.filter(payment_status='da_thanh_toan')
@@ -41,7 +43,7 @@ class ReportService(ABCReportService):
 
     def thong_ke_trang_thai_phong(self):
         """Thống kê số phòng theo trạng thái"""
-        from hotel.models import Room
+        from hotel_app.models import Room
         qs = Room.objects.all()
         return {
             'tong':     qs.count(),
@@ -51,8 +53,9 @@ class ReportService(ABCReportService):
         }
 
     def thong_ke_dat_phong(self, tu_ngay=None, den_ngay=None):
+        # Dem so booking theo trang thai, co the loc theo ngay tao.
         """Thống kê số lượng booking theo trạng thái"""
-        from hotel.models import Booking
+        from hotel_app.models import Booking
 
         qs = Booking.objects.all()
         if tu_ngay:
@@ -70,8 +73,9 @@ class ReportService(ABCReportService):
         }
 
     def top_dich_vu(self, top_n=5):
+        # Lay top dich vu duoc su dung nhieu nhat theo tong so luong.
         """Thống kê các dịch vụ được sử dụng nhiều nhất"""
-        from hotel.models import BookingService
+        from hotel_app.models import BookingService
         from django.db.models import Sum
 
         qs = (BookingService.objects
@@ -93,3 +97,4 @@ class ReportService(ABCReportService):
 
     def __str__(self):
         return 'ReportService()'
+

@@ -3,13 +3,13 @@ test_services.py – Kiểm thử tầng Services (OOP nghiệp vụ)
 Chạy: python manage.py test hotel.tests.test_services
 """
 from django.test import TestCase
-from hotel.models import (User, Department, Employee, Customer,
+from hotel_app.models import (User, Department, Employee, Customer,
                            RoomType, Room, Booking, Invoice,
                            Service, BookingService as BookingServiceModel)
-from hotel.services.room_service    import RoomService
-from hotel.services.booking_service import BookingService as BookingWorkflowService
-from hotel.services.invoice_service import InvoiceService
-from hotel.services.report_service  import ReportService
+from hotel_app.services.room_service    import RoomService
+from hotel_app.services.booking_service import BookingService as BookingWorkflowService
+from hotel_app.services.invoice_service import InvoiceService
+from hotel_app.services.report_service  import ReportService
 from datetime import date
 
 
@@ -376,3 +376,4 @@ class ReportServiceTest(BaseTestData):
 
     def test_ten_service(self):
         self.assertEqual(self.svc.ten_service, 'ReportService')
+

@@ -3,7 +3,7 @@ test_models.py – Kiểm thử các Model (bảng CSDL)
 Chạy: python manage.py test hotel.tests.test_models
 """
 from django.test import TestCase
-from hotel.models import (User, Department, Employee, Customer,
+from hotel_app.models import (User, Department, Employee, Customer,
                            RoomType, Room, Booking, Invoice,
                            Service, BookingService)
 from datetime import date
@@ -192,3 +192,4 @@ class BookingModelTest(TestCase):
     def test_booking_str(self):
         ket_qua = str(self.booking)
         self.assertIn('cho_xac_nhan', ket_qua)
+

@@ -58,31 +58,37 @@ algorithm$iterations$salt$hash
 
 ```text
 hotel_management/
-├── core/
-│   ├── utils.py
-│   └── validators.py
-├── hotel/
-│   ├── models.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── services/
-│   │   ├── room_service.py
-│   │   ├── booking_service.py
-│   │   ├── invoice_service.py
-│   │   └── report_service.py
-│   ├── migrations/
-│   └── tests/
-├── hotel_management/
-│   ├── settings.py
-│   └── urls.py
-├── scripts/
-│   ├── script_create_db_hotel_management.sql
-│   └── script_insert_data_hotel_management.sql
-├── postman/
-│   └── hotel_management_postman_collection.json
-├── manage.py
-├── requirements.txt
-└── README.md
+??? core/
+?   ??? utils.py
+?   ??? validators.py
+??? hotel_app/
+?   ??? models.py
+?   ??? urls.py
+?   ??? views/
+?   ??? services/
+?   ?   ??? auth_service.py
+?   ?   ??? booking_service.py
+?   ?   ??? customer_service.py
+?   ?   ??? department_service.py
+?   ?   ??? employee_service.py
+?   ?   ??? invoice_service.py
+?   ?   ??? report_service.py
+?   ?   ??? room_service.py
+?   ?   ??? service_service.py
+?   ?   ??? user_service.py
+?   ??? migrations/
+?   ??? tests/
+??? config/
+?   ??? settings.py
+?   ??? urls.py
+??? scripts/
+?   ??? script_create_db_hotel_management.sql
+?   ??? script_insert_data_hotel_management.sql
+??? docs/
+?   ??? hotel_management_postman_collection.json
+??? manage.py
+??? requirements.txt
+??? README.md
 ```
 
 ---
@@ -236,6 +242,8 @@ Postman collection tập trung vào **12 API theo luồng nghiệp vụ chính**
 |---|---|---|
 | GET | `/api/rooms/` | Xem danh sách phòng |
 | GET | `/api/rooms/?status=trong` | Lọc phòng theo trạng thái |
+| GET | `/api/rooms/?floor=3&capacity=4` | Lọc phòng theo tầng và sức chứa tối thiểu |
+| GET | `/api/rooms/?room_type_id=1` | Lọc phòng theo loại phòng |
 | POST | `/api/rooms/` | Thêm phòng |
 | GET | `/api/rooms/<id>/` | Xem chi tiết phòng |
 | PUT | `/api/rooms/<id>/` | Cập nhật phòng |
@@ -258,6 +266,8 @@ Postman collection tập trung vào **12 API theo luồng nghiệp vụ chính**
 |---|---|---|
 | GET | `/api/bookings/` | Xem danh sách đặt phòng |
 | GET | `/api/bookings/?status=cho_xac_nhan` | Lọc booking theo trạng thái |
+| GET | `/api/bookings/?customer_id=1&room_id=16` | Lọc booking theo khách hàng/phòng |
+| GET | `/api/bookings/?tu_ngay=2026-05-01&den_ngay=2026-05-31` | Lọc booking theo khoảng ngày |
 | POST | `/api/bookings/` | Tạo đặt phòng |
 | GET | `/api/bookings/<id>/` | Xem chi tiết đặt phòng |
 | PUT | `/api/bookings/<id>/` | Cập nhật ghi chú đặt phòng |
@@ -391,7 +401,7 @@ python manage.py migrate
 Kiểm tra file:
 
 ```text
-hotel_management/settings.py
+config/settings.py
 ```
 
 Phần database:
@@ -445,7 +455,7 @@ ECONNREFUSED 127.0.0.1:8000
 File collection:
 
 ```text
-postman/hotel_management_postman_collection.json
+docs/hotel_management_postman_collection.json
 ```
 
 Cách dùng:
@@ -565,3 +575,4 @@ Anyone with the link can view/download
 - API cần quyền quản lý sẽ trả `403` nếu sai role.
 - Password đang lưu trực tiếp để đơn giản cho đồ án môn học.
 - Tiền tệ trong hệ thống tính bằng VND.
+

@@ -6,7 +6,7 @@ from django.test import TestCase, RequestFactory
 from django.http import JsonResponse
 from core.utils      import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
 from core.validators import kiem_tra_truong_bat_buoc, kiem_tra_ngay
-from hotel.models    import User
+from hotel_app.models    import User
 import json
 
 
@@ -152,3 +152,4 @@ class KiemTraRoleTest(TestCase):
         self.assertIsNone(user)
         self.assertIsNotNone(err)
         self.assertEqual(err.status_code, 403)
+

@@ -3,7 +3,11 @@ hotel/services/invoice_service.py
 Quản lý nghiệp vụ hóa đơn – Áp dụng ABC + kế thừa + đóng gói
 """
 from abc import ABC, abstractmethod
+from datetime import date
 
+from django.utils import timezone
+
+from hotel_app.models import Invoice, Booking, BookingService
 
 # ── Abstract base ─────────────────────────────────────────────────
 class ABCInvoiceService(ABC):
@@ -20,12 +24,69 @@ class ABCInvoiceService(ABC):
 
 # ── Concrete class ────────────────────────────────────────────────
 class InvoiceService(ABCInvoiceService):
-    """Quản lý nghiệp vụ hóa đơn – kế thừa ABCInvoiceService"""
+    def to_dict(self, invoice):
+        # Chuyen Invoice model thanh dict day du tra ve API.
+        return {
+            'id': invoice.id,
+            'booking_id': invoice.booking_id,
+            'customer': invoice.booking.customer.full_name,
+            'room_number': invoice.booking.room.room_number,
+            'room_charge': float(invoice.room_charge),
+            'service_charge': float(invoice.service_charge),
+            'total': float(invoice.total),
+            'payment_status': invoice.payment_status,
+            'payment_method': invoice.payment_method,
+            'paid_at': str(invoice.paid_at) if invoice.paid_at else None,
+        }
+
+    def to_booking_invoice_dict(self, invoice):
+        # Chuyen Invoice thanh dict rut gon khi xem theo booking.
+        return {
+            'id': invoice.id,
+            'booking_id': invoice.booking_id,
+            'customer': invoice.booking.customer.full_name,
+            'room_number': invoice.booking.room.room_number,
+            'room_charge': float(invoice.room_charge),
+            'service_charge': float(invoice.service_charge),
+            'total': float(invoice.total),
+            'payment_status': invoice.payment_status,
+        }
+
+    def lay_danh_sach(self):
+        # Lay danh sach hoa don.
+        qs = Invoice.objects.select_related('booking__customer', 'booking__room')
+        return [self.to_dict(invoice) for invoice in qs]
+
+    def lay_chi_tiet(self, invoice_id):
+        # Lay chi tiet hoa don theo id.
+        try:
+            invoice = Invoice.objects.select_related(
+                'booking__customer', 'booking__room').get(id=invoice_id)
+        except Invoice.DoesNotExist:
+            return None, 'Không tìm thấy hóa đơn'
+        return self.to_dict(invoice), None
+
+    def tao_hoa_don_thu_cong(self, booking_id):
+        # Tao hoa don thu cong tu booking_id.
+        try:
+            booking = Booking.objects.select_related(
+                'room', 'room__room_type').get(id=booking_id)
+        except Booking.DoesNotExist:
+            return None, 'Không tìm thấy booking'
+        invoice = self.tao_hoa_don(booking)
+        return self.to_dict(invoice), None
+
+    def lay_theo_booking(self, booking_id):
+        # Lay hoa don gan voi mot booking.
+        try:
+            invoice = Invoice.objects.select_related(
+                'booking__customer', 'booking__room').get(booking_id=booking_id)
+        except Invoice.DoesNotExist:
+            return None, 'Chưa có hóa đơn cho booking này'
+        return self.to_booking_invoice_dict(invoice), None
 
     def __tinh_tien(self, booking):
         """(Private) Tính tiền phòng và tiền dịch vụ"""
-        from hotel.models import BookingService
-        from datetime import date
 
         # Tiền phòng = số đêm × giá/đêm
         ci = booking.check_in
@@ -47,7 +108,6 @@ class InvoiceService(ABCInvoiceService):
 
     def tao_hoa_don(self, booking):
         """Tạo hóa đơn mới cho booking"""
-        from hotel.models import Invoice
 
         tien_phong, tien_dv = self.__tinh_tien(booking)
         tong = tien_phong + tien_dv
@@ -65,7 +125,6 @@ class InvoiceService(ABCInvoiceService):
 
     def cap_nhat_hoa_don(self, booking):
         """Tính lại và cập nhật hóa đơn (khi thêm dịch vụ hoặc check-out)"""
-        from hotel.models import Invoice
 
         tien_phong, tien_dv = self.__tinh_tien(booking)
         tong = tien_phong + tien_dv
@@ -88,9 +147,6 @@ class InvoiceService(ABCInvoiceService):
 
     def thanh_toan(self, invoice_id, phuong_thuc):
         """Cập nhật trạng thái thanh toán"""
-        from hotel.models import Invoice
-        from django.utils import timezone
-
         try:
             inv = Invoice.objects.get(id=invoice_id)
         except Invoice.DoesNotExist:
@@ -111,3 +167,4 @@ class InvoiceService(ABCInvoiceService):
 
     def __str__(self):
         return 'InvoiceService()'
+

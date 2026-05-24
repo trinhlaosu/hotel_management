@@ -59,3 +59,11 @@ staticfiles/
 .env
 .env.*
 .env.local
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Django secret / local config
+local_settings.py
+secret_key.txt

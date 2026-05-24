@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hotel',   # App quản lý khách sạn
+    'hotel_app.apps.HotelConfig',   # App quản lý khách sạn
 ]
 
 MIDDLEWARE = [
@@ -26,7 +26,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-ROOT_URLCONF = 'hotel_management.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -39,7 +39,7 @@ TEMPLATES = [{
     ]},
 }]
 
-WSGI_APPLICATION = 'hotel_management.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Kết nối MySQL
 DATABASES = {
@@ -65,3 +65,4 @@ USE_TZ        = True
 
 STATIC_URL          = 'static/'
 DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
+

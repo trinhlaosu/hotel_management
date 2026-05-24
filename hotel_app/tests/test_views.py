@@ -13,7 +13,7 @@ from datetime import date
 
 from django.test import Client, TestCase
 
-from hotel.models import (
+from hotel_app.models import (
     Booking, BookingService, Customer, Department, Employee,
     Invoice, Room, RoomType, Service, User,
 )
@@ -109,6 +109,9 @@ class BaseTest(TestCase):
             data=json.dumps(data or {}),
             content_type="application/json",
         )
+
+    def delete(self, url):
+        return self.client.delete(url, content_type="application/json")
 
     def _tao_booking(self, check_in="2026-07-01", check_out="2026-07-04"):
         """Tạo booking + trả về booking_id – dùng lại ở nhiều test."""
@@ -365,6 +368,28 @@ class RoomTest(BaseTest):
 
         self.assertNotIn("103", room_numbers)
 
+    def test_07_loc_phong_theo_tang_va_suc_chua(self):
+        """Loc phong theo floor va capacity de tim phong phu hop nhu cau."""
+        room_type_4 = RoomType.objects.create(
+            name="Family",
+            price_per_night=900_000,
+            capacity=4,
+        )
+        Room.objects.create(
+            room_type=room_type_4,
+            room_number="301",
+            floor=3,
+            status="trong",
+        )
+        self.login()
+
+        res = self.client.get("/api/rooms/?floor=3&capacity=4")
+
+        self.assertEqual(res.status_code, 200)
+        ds = res.json()["data"]
+        self.assertEqual(len(ds), 1)
+        self.assertEqual(ds[0]["room_number"], "301")
+
     # --- API 8: Cập nhật trạng thái phòng ---
 
     def test_08_cap_nhat_trang_thai_phong(self):
@@ -424,6 +449,21 @@ class BookingTest(BaseTest):
         self.assertEqual(res.status_code, 200)
         for b in res.json()["data"]:
             self.assertEqual(b["status"], "cho_xac_nhan")
+
+    def test_09_loc_booking_theo_khach_phong_va_khoang_ngay(self):
+        """Loc booking theo customer_id, room_id, tu_ngay, den_ngay."""
+        self.login()
+        self._tao_booking("2026-07-01", "2026-07-04")
+
+        res = self.client.get(
+            f"/api/bookings/?customer_id={self.customer.id}"
+            f"&room_id={self.room.id}&tu_ngay=2026-07-01&den_ngay=2026-07-04"
+        )
+
+        self.assertEqual(res.status_code, 200)
+        ds = res.json()["data"]
+        self.assertEqual(len(ds), 1)
+        self.assertEqual(ds[0]["room_number"], self.room.room_number)
 
     # --- API 10: Tạo đặt phòng ---
 
@@ -663,6 +703,19 @@ class ServiceTest(BaseTest):
 
         self.assertEqual(res.status_code, 404)
 
+    def test_16_ghi_nhan_dich_vu_so_luong_khong_hop_le(self):
+        """So luong dich vu <= 0 thi khong duoc ghi nhan."""
+        self.login()
+        bid = self._tao_booking("2027-02-20", "2027-02-23")
+
+        res = self.post(f"/api/bookings/{bid}/services/", {
+            "service_id": self.service.id,
+            "quantity":   0,
+        })
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("error", res.json())
+
 
 # =============================================================================
 # API 17, 18, 19 – Hóa đơn
@@ -868,3 +921,298 @@ class ReportTest(BaseTest):
 
         self.assertEqual(res.status_code, 200)
         self.assertLessEqual(len(res.json()["data"]), 3)
+
+
+# =============================================================================
+# Bo sung coverage cho cac endpoint CRUD/detail con lai
+# =============================================================================
+
+class FullApiCoverageTest(BaseTest):
+    """Moi test cham vao nhom endpoint/method con thieu trong luong demo chinh."""
+
+    def test_24_auth_register_profile_va_change_password(self):
+        res = self.post("/api/auth/register/", {
+            "username": "new_reception",
+            "password": "abc123",
+            "email": "new_reception@hotel.com",
+        })
+        self.assertEqual(res.status_code, 201)
+        self.assertFalse(res.json()["data"]["is_active"])
+
+        self.login("nv_chuyen")
+        res = self.client.get("/api/auth/profile/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["username"], "nv_chuyen")
+
+        res = self.put("/api/auth/profile/", {
+            "email": "chuyen_new@hotel.com",
+            "full_name": "Vo Mong Chuyen Update",
+            "phone": "0902222222",
+        })
+        self.assertEqual(res.status_code, 200)
+        self.le_tan.refresh_from_db()
+        self.emp.refresh_from_db()
+        self.assertEqual(self.le_tan.email, "chuyen_new@hotel.com")
+        self.assertEqual(self.emp.phone, "0902222222")
+
+        res = self.put("/api/auth/change-password/", {
+            "old_password": "123456",
+            "new_password": "654321",
+        })
+        self.assertEqual(res.status_code, 200)
+        self.client.post("/api/auth/logout/", content_type="application/json")
+        res = self.login("nv_chuyen", "654321")
+        self.assertEqual(res.status_code, 200)
+
+    def test_25_user_crud_detail(self):
+        self.login("admin_mychi")
+        res = self.post("/api/users/", {
+            "username": "user_crud",
+            "password": "123456",
+            "email": "user_crud@hotel.com",
+            "role": "le_tan",
+        })
+        self.assertEqual(res.status_code, 201)
+        user_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/users/{user_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["username"], "user_crud")
+
+        res = self.put(f"/api/users/{user_id}/", {
+            "email": "user_crud_new@hotel.com",
+            "role": "quan_ly",
+            "is_active": True,
+        })
+        self.assertEqual(res.status_code, 200)
+        user = User.objects.get(id=user_id)
+        self.assertEqual(user.email, "user_crud_new@hotel.com")
+        self.assertEqual(user.role, "quan_ly")
+
+        res = self.delete(f"/api/users/{user_id}/")
+        self.assertEqual(res.status_code, 200)
+        user.refresh_from_db()
+        self.assertFalse(user.is_active)
+
+    def test_26_department_crud(self):
+        self.login("admin_mychi")
+        res = self.client.get("/api/departments/")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.post("/api/departments/", {
+            "name": "Bao ve",
+            "description": "An ninh khach san",
+        })
+        self.assertEqual(res.status_code, 201)
+        dept_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/departments/{dept_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["name"], "Bao ve")
+
+        res = self.put(f"/api/departments/{dept_id}/", {
+            "name": "Bao ve dem",
+            "description": "Ca dem",
+        })
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Department.objects.get(id=dept_id).name, "Bao ve dem")
+
+        res = self.delete(f"/api/departments/{dept_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Department.objects.filter(id=dept_id).exists())
+
+    def test_27_employee_crud(self):
+        self.login("admin_mychi")
+        res = self.client.get("/api/employees/")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.post("/api/employees/", {
+            "username": "emp_crud",
+            "password": "123456",
+            "email": "emp_crud@hotel.com",
+            "department_id": self.dept.id,
+            "full_name": "Nhan Vien CRUD",
+            "phone": "0903333333",
+            "hire_date": "2026-01-01",
+            "salary": 9000000,
+            "shift": "chieu",
+        })
+        self.assertEqual(res.status_code, 201)
+        emp_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/employees/{emp_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["full_name"], "Nhan Vien CRUD")
+
+        res = self.put(f"/api/employees/{emp_id}/", {
+            "full_name": "Nhan Vien Updated",
+            "phone": "0904444444",
+            "salary": 10000000,
+            "shift": "toi",
+        })
+        self.assertEqual(res.status_code, 200)
+        emp = Employee.objects.get(id=emp_id)
+        self.assertEqual(emp.full_name, "Nhan Vien Updated")
+        self.assertEqual(emp.shift, "toi")
+
+        res = self.delete(f"/api/employees/{emp_id}/")
+        self.assertEqual(res.status_code, 200)
+        emp.refresh_from_db()
+        emp.user.refresh_from_db()
+        self.assertEqual(emp.status, "nghi_viec")
+        self.assertFalse(emp.user.is_active)
+
+    def test_28_customer_detail_update_delete(self):
+        self.login("admin_mychi")
+        res = self.client.get(f"/api/customers/{self.customer.id}/")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.put(f"/api/customers/{self.customer.id}/", {
+            "full_name": "Nguyen Van B",
+            "phone": "0909090902",
+            "email": "customer@hotel.com",
+            "address": "TP HCM",
+            "customer_type": "vip",
+        })
+        self.assertEqual(res.status_code, 200)
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.customer_type, "vip")
+
+        res = self.delete(f"/api/customers/{self.customer.id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Customer.objects.filter(id=self.customer.id).exists())
+
+    def test_29_room_type_crud(self):
+        self.login("admin_mychi")
+        res = self.client.get("/api/room-types/")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.post("/api/room-types/", {
+            "name": "Suite CRUD",
+            "price_per_night": 1200000,
+            "capacity": 3,
+            "description": "Phong cao cap",
+        })
+        self.assertEqual(res.status_code, 201)
+        room_type_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/room-types/{room_type_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["name"], "Suite CRUD")
+
+        res = self.put(f"/api/room-types/{room_type_id}/", {
+            "name": "Suite Updated",
+            "price_per_night": 1300000,
+            "capacity": 4,
+        })
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(RoomType.objects.get(id=room_type_id).capacity, 4)
+
+        res = self.delete(f"/api/room-types/{room_type_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(RoomType.objects.filter(id=room_type_id).exists())
+
+    def test_30_room_crud_detail(self):
+        self.login("admin_mychi")
+        res = self.post("/api/rooms/", {
+            "room_type_id": self.room_type.id,
+            "room_number": "909",
+            "floor": 9,
+            "status": "trong",
+        })
+        self.assertEqual(res.status_code, 201)
+        room_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/rooms/{room_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["room_number"], "909")
+
+        res = self.put(f"/api/rooms/{room_id}/", {"floor": 10})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Room.objects.get(id=room_id).floor, 10)
+
+        res = self.delete(f"/api/rooms/{room_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Room.objects.filter(id=room_id).exists())
+
+    def test_31_service_crud_detail(self):
+        self.login("admin_mychi")
+        res = self.post("/api/services/", {
+            "name": "Spa CRUD",
+            "price": 250000,
+            "description": "Dich vu spa",
+        })
+        self.assertEqual(res.status_code, 201)
+        service_id = res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/services/{service_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["name"], "Spa CRUD")
+
+        res = self.put(f"/api/services/{service_id}/", {
+            "name": "Spa Updated",
+            "price": 300000,
+            "description": "Cap nhat",
+            "is_active": True,
+        })
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Service.objects.get(id=service_id).name, "Spa Updated")
+
+        res = self.delete(f"/api/services/{service_id}/")
+        self.assertEqual(res.status_code, 200)
+        service = Service.objects.get(id=service_id)
+        self.assertFalse(service.is_active)
+
+    def test_32_booking_detail_update_delete(self):
+        self.login()
+        bid = self._tao_booking("2027-06-01", "2027-06-04")
+
+        res = self.client.get(f"/api/bookings/{bid}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["so_dem"], 3)
+
+        res = self.put(f"/api/bookings/{bid}/", {"note": "Cap nhat ghi chu"})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Booking.objects.get(id=bid).note, "Cap nhat ghi chu")
+
+        res = self.delete(f"/api/bookings/{bid}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Booking.objects.get(id=bid).status, "da_huy")
+
+    def test_33_booking_service_get_put_delete(self):
+        self.login()
+        bid = self._tao_booking("2027-07-01", "2027-07-04")
+        add_res = self.post(f"/api/bookings/{bid}/services/", {
+            "service_id": self.service.id,
+            "quantity": 2,
+        })
+        self.assertEqual(add_res.status_code, 201)
+        bs_id = add_res.json()["data"]["id"]
+
+        res = self.client.get(f"/api/bookings/{bid}/services/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.json()["data"]), 1)
+
+        res = self.put(f"/api/booking-services/{bs_id}/", {"quantity": 3})
+        self.assertEqual(res.status_code, 200)
+        bs = BookingService.objects.get(id=bs_id)
+        self.assertEqual(bs.quantity, 3)
+        self.assertEqual(float(bs.subtotal), 450000.0)
+
+        res = self.delete(f"/api/booking-services/{bs_id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(BookingService.objects.filter(id=bs_id).exists())
+
+    def test_34_invoice_list_and_detail(self):
+        self.login()
+        bid = self._tao_booking("2027-08-01", "2027-08-04")
+        inv = Invoice.objects.get(booking_id=bid)
+
+        res = self.client.get("/api/invoices/")
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(any(item["id"] == inv.id for item in res.json()["data"]))
+
+        res = self.client.get(f"/api/invoices/{inv.id}/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["data"]["booking_id"], bid)
+

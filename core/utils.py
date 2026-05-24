@@ -25,7 +25,7 @@ def doc_json(request):
 
 def lay_user_hien_tai(request):
     """Lay user hien tai tu session."""
-    from hotel.models import User
+    from hotel_app.models import User
     user_id = request.session.get('user_id')
     if not user_id:
         return None
@@ -51,3 +51,4 @@ def yeu_cau_dang_nhap(request):
     if not user:
         return None, phan_hoi(error='Chưa đăng nhập', status=401)
     return user, None
+
