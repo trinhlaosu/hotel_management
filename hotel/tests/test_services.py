@@ -5,9 +5,9 @@ Chạy: python manage.py test hotel.tests.test_services
 from django.test import TestCase
 from hotel.models import (User, Department, Employee, Customer,
                            RoomType, Room, Booking, Invoice,
-                           Service, BookingService)
+                           Service, BookingService as BookingServiceModel)
 from hotel.services.room_service    import RoomService
-from hotel.services.booking_service import BookingService
+from hotel.services.booking_service import BookingService as BookingWorkflowService
 from hotel.services.invoice_service import InvoiceService
 from hotel.services.report_service  import ReportService
 from datetime import date
@@ -127,7 +127,7 @@ class BookingServiceTest(BaseTestData):
     """Kiểm thử BookingService"""
 
     def setUp(self):
-        self.svc = BookingService()
+        self.svc = BookingWorkflowService()
 
     def test_tinh_so_dem(self):
         """3 đêm từ 10/6 đến 13/6"""
@@ -287,7 +287,7 @@ class InvoiceServiceTest(BaseTestData):
 
     def test_tao_hoa_don_co_dich_vu(self):
         """Hóa đơn gồm tiền phòng + tiền dịch vụ"""
-        BookingService.objects.create(
+        BookingServiceModel.objects.create(
             booking=self.booking, service=self.service,
             quantity=2, subtotal=300000)   # 2 × 150.000
         invoice = self.svc.tao_hoa_don(self.booking)
@@ -362,7 +362,7 @@ class ReportServiceTest(BaseTestData):
             customer=self.customer, room=self.room,
             check_in=date(2026, 6, 1), check_out=date(2026, 6, 3),
             status='da_tra_phong')
-        BookingService.objects.create(
+        BookingServiceModel.objects.create(
             booking=b, service=self.service,
             quantity=3, subtotal=450000)
 

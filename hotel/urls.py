@@ -8,6 +8,7 @@ from . import views
 urlpatterns = [
 
     # ── Auth ──────────────────────────────────────────────────────
+    path('auth/register/',       views.AuthView.as_view()),       # POST
     path('auth/login/',          views.AuthView.as_view()),       # POST
     path('auth/logout/',         views.AuthView.as_view()),       # POST
     path('auth/profile/',        views.AuthView.as_view()),       # GET | PUT
@@ -37,6 +38,10 @@ urlpatterns = [
     path('rooms/',               views.RoomView.as_view()),       # GET | POST
     path('rooms/<int:pk>/',      views.RoomView.as_view()),       # GET | PUT | DELETE
     path('rooms/<int:pk>/status/',views.RoomStatusView.as_view()),# PUT
+
+    # Service
+    path('services/',             views.ServiceView.as_view()),    # GET | POST
+    path('services/<int:pk>/',    views.ServiceView.as_view()),    # GET | PUT | DELETE
 
     # ── Booking ───────────────────────────────────────────────────
     path('bookings/',            views.BookingView.as_view()),    # GET | POST

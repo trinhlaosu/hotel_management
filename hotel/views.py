@@ -12,9 +12,9 @@ from django.utils   import timezone
 
 from hotel.models   import (User, Department, Employee, Customer,
                              RoomType, Room, Booking, Invoice,
-                             Service, BookingService)
+                             Service, BookingService as BookingServiceModel)
 from hotel.services.room_service    import RoomService
-from hotel.services.booking_service import BookingService
+from hotel.services.booking_service import BookingService as BookingWorkflowService
 from hotel.services.invoice_service import InvoiceService
 from hotel.services.report_service  import ReportService
 from core.utils      import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
@@ -32,6 +32,29 @@ class AuthView(View):
         path = request.path
 
         # ── Đăng nhập ──
+        if path.endswith('/register/'):
+            data, err = doc_json(request)
+            if err:
+                return err
+
+            ok, msg = kiem_tra_truong_bat_buoc(data,
+                  ['username', 'password', 'email'])
+            if not ok:
+                return phan_hoi(error=msg, status=400)
+
+            if User.objects.filter(username=data['username']).exists():
+                return phan_hoi(error='Username da ton tai', status=400)
+            if User.objects.filter(email=data['email']).exists():
+                return phan_hoi(error='Email da ton tai', status=400)
+
+            user = User.objects.create(
+                username=data['username'], password=data['password'],
+                email=data['email'], role='le_tan')
+            return phan_hoi(
+                data={'user_id': user.id, 'username': user.username,
+                      'role': user.role},
+                message='Dang ky thanh cong', status=201)
+
         if path.endswith('/login/'):
             data, err = doc_json(request)
             if err:
@@ -628,7 +651,7 @@ class BookingView(View):
             try:
                 b = Booking.objects.select_related(
                     'customer','room','room__room_type').get(id=pk)
-                svc    = BookingService()
+                svc    = BookingWorkflowService()
                 so_dem = svc.tinh_so_dem(b.check_in, b.check_out)
                 return phan_hoi(data={
                     **self._to_dict(b),
@@ -670,7 +693,7 @@ class BookingView(View):
         except Employee.DoesNotExist:
             data['created_by_id'] = None
 
-        svc = BookingService()
+        svc = BookingWorkflowService()
         booking, err_msg = svc.tao_booking(data)
         if not booking:
             return phan_hoi(error=err_msg, status=400)
@@ -706,7 +729,7 @@ class BookingView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        svc = BookingService()
+        svc = BookingWorkflowService()
         b, err_msg = svc.huy_booking(pk)
         if not b:
             return phan_hoi(error=err_msg, status=400)
@@ -722,7 +745,7 @@ class BookingConfirmView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        svc = BookingService()
+        svc = BookingWorkflowService()
         b, err_msg = svc.xac_nhan_booking(pk)
         if not b:
             return phan_hoi(error=err_msg, status=400)
@@ -737,7 +760,7 @@ class BookingCancelView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        svc = BookingService()
+        svc = BookingWorkflowService()
         b, err_msg = svc.huy_booking(pk)
         if not b:
             return phan_hoi(error=err_msg, status=400)
@@ -752,7 +775,7 @@ class BookingCheckinView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        svc = BookingService()
+        svc = BookingWorkflowService()
         b, err_msg = svc.check_in(pk)
         if not b:
             return phan_hoi(error=err_msg, status=400)
@@ -767,7 +790,7 @@ class BookingCheckoutView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        svc = BookingService()
+        svc = BookingWorkflowService()
         b, err_msg = svc.check_out(pk)
         if not b:
             return phan_hoi(error=err_msg, status=400)
@@ -857,7 +880,7 @@ class BookingServiceView(View):
         user, err = yeu_cau_dang_nhap(request)
         if err:
             return err
-        ds = BookingService.objects.filter(
+        ds = BookingServiceModel.objects.filter(
             booking_id=pk).select_related('service')
         return phan_hoi(data=list(map(lambda bs: {
             'id': bs.id, 'service': bs.service.name,
@@ -883,7 +906,7 @@ class BookingServiceView(View):
         quantity = int(data['quantity'])
         subtotal = float(s.price) * quantity
 
-        bs = BookingService.objects.create(
+        bs = BookingServiceModel.objects.create(
             booking_id=pk, service=s,
             quantity=quantity, subtotal=subtotal)
 
@@ -913,12 +936,12 @@ class BookingServiceDetailView(View):
         if err:
             return err
         try:
-            bs = BookingService.objects.select_related('service').get(id=pk)
+            bs = BookingServiceModel.objects.select_related('service').get(id=pk)
             bs.quantity = data.get('quantity', bs.quantity)
             bs.subtotal = float(bs.service.price) * int(bs.quantity)
             bs.save()
             return phan_hoi(message='Cập nhật dịch vụ thành công')
-        except BookingService.DoesNotExist:
+        except BookingServiceModel.DoesNotExist:
             return phan_hoi(error='Không tìm thấy', status=404)
 
     def delete(self, request, pk):
@@ -926,9 +949,9 @@ class BookingServiceDetailView(View):
         if err:
             return err
         try:
-            BookingService.objects.get(id=pk).delete()
+            BookingServiceModel.objects.get(id=pk).delete()
             return phan_hoi(message='Xóa dịch vụ thành công')
-        except BookingService.DoesNotExist:
+        except BookingServiceModel.DoesNotExist:
             return phan_hoi(error='Không tìm thấy', status=404)
 
 
