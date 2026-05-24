@@ -16,7 +16,7 @@ Dự án này được thực hiện theo yêu cầu đồ án môn học: xây 
 | Có cơ sở dữ liệu | Sử dụng MySQL, database `hotel_management` |
 | Số bảng CSDL từ 5 đến 10 | Có đúng 10 bảng chính |
 | Có tối thiểu 2 đối tượng người dùng | Có `quan_ly` và `le_tan` |
-| Có API đăng nhập, đăng ký | Có `/api/auth/login/`, `/api/auth/register/` |
+| Có API đăng nhập, đăng ký | Có `/api/auth/login/`, `/api/auth/register/`; tài khoản đăng ký cần quản lý duyệt |
 | Có REST API GET, POST, PUT, DELETE | Có đủ các method GET, POST, PUT, DELETE |
 | Có API thể hiện chức năng quan trọng | Có API đặt phòng, check-in, check-out, thanh toán, thống kê |
 | Kiểm thử API bằng Postman | Có file Postman collection theo luồng 12 API chính |
@@ -44,6 +44,13 @@ Dự án dùng Django cơ bản theo phong cách trên lớp:
 - `@csrf_exempt`
 - Tự đọc JSON request body
 - Không dùng Django REST Framework
+- Mật khẩu người dùng được mã hóa bằng Django password hasher
+
+Mật khẩu không được lưu trực tiếp trong database. Khi tạo tài khoản, đăng ký hoặc đổi mật khẩu, hệ thống dùng `make_password()` của Django để hash mật khẩu theo dạng `pbkdf2_sha256`. Khi đăng nhập, hệ thống dùng `check_password()` để so sánh mật khẩu người dùng nhập với chuỗi hash đã lưu. Chuỗi hash có dạng:
+
+```text
+algorithm$iterations$salt$hash
+```
 
 ---
 
@@ -123,14 +130,15 @@ Tiền tệ sử dụng trong hệ thống: **VND**.
 |---|---|---|
 | `quan_ly` | Quản lý | Quản lý user, nhân viên, phòng ban, danh mục, xem báo cáo |
 | `le_tan` | Lễ tân / nhân viên | Quản lý khách hàng, phòng, booking, dịch vụ, hóa đơn |
-| Guest | Chưa đăng nhập | Đăng ký, đăng nhập |
+| Guest | Chưa đăng nhập | Đăng ký tài khoản, đăng nhập vào hệ thống |
 
 Tài khoản mẫu:
 
 | Role | Username | Password |
 |---|---|---|
-| `quan_ly` | `ql001` | `123456` |
-| `le_tan` | `lt001` | `123456` |
+| `quan_ly` | `ql001` | `MyChi@123` |
+| `le_tan` | `lt001` | `Chuyen@123` |
+| `le_tan` | `lt002` | `DucMinh@123` |
 
 ---
 
@@ -163,7 +171,7 @@ Postman collection tập trung vào **12 API theo luồng nghiệp vụ chính**
 
 | Method | Endpoint | Chức năng |
 |---|---|---|
-| POST | `/api/auth/register/` | Đăng ký tài khoản |
+| POST | `/api/auth/register/` | Đăng ký tài khoản lễ tân, chờ quản lý duyệt |
 | POST | `/api/auth/login/` | Đăng nhập |
 | POST | `/api/auth/logout/` | Đăng xuất |
 | GET | `/api/auth/profile/` | Xem hồ sơ cá nhân |
@@ -465,7 +473,7 @@ base_url = http://127.0.0.1:8000
 ```json
 {
   "username": "ql001",
-  "password": "123456"
+  "password": "MyChi@123"
 }
 ```
 

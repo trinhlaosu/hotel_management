@@ -14,7 +14,7 @@ USE hotel_management;
 CREATE TABLE `User` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL, -- Luu password hash cua Django, khong luu mat khau goc
     email VARCHAR(254) NOT NULL UNIQUE,
     role VARCHAR(20) NOT NULL DEFAULT 'le_tan',
     is_active TINYINT(1) NOT NULL DEFAULT 1,

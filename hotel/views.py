@@ -1,9 +1,10 @@
-"""
+﻿"""
 Views – 28 chức năng Web API Quản lý Khách sạn (nội bộ)
 Phong cách: Class-Based Views theo hướng dẫn thầy (buổi 09)
 Áp dụng: @csrf_exempt, JsonResponse, OOP Services
 """
 import json
+from django.contrib.auth.hashers import check_password, make_password
 from django.http    import JsonResponse
 from django.views   import View
 from django.utils.decorators import method_decorator
@@ -19,6 +20,22 @@ from hotel.services.invoice_service import InvoiceService
 from hotel.services.report_service  import ReportService
 from core.utils      import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
 from core.validators import kiem_tra_truong_bat_buoc, kiem_tra_ngay
+
+
+def ma_hoa_mat_khau(mat_khau):
+    return make_password(mat_khau)
+
+
+def kiem_tra_mat_khau(user, mat_khau):
+    if not mat_khau:
+        return False
+    if check_password(mat_khau, user.password):
+        return True
+    if user.password == mat_khau:
+        user.password = ma_hoa_mat_khau(mat_khau)
+        user.save(update_fields=['password'])
+        return True
+    return False
 
 
 # ================================================================== #
@@ -48,12 +65,16 @@ class AuthView(View):
                 return phan_hoi(error='Email da ton tai', status=400)
 
             user = User.objects.create(
-                username=data['username'], password=data['password'],
-                email=data['email'], role='le_tan')
+                username=data['username'],
+                password=ma_hoa_mat_khau(data['password']),
+                email=data['email'],
+                role='le_tan',
+                is_active=False)
             return phan_hoi(
                 data={'user_id': user.id, 'username': user.username,
-                      'role': user.role},
-                message='Dang ky thanh cong', status=201)
+                      'role': user.role, 'is_active': user.is_active},
+                message='Dang ky thanh cong, vui long cho quan ly duyet',
+                status=201)
 
         if path.endswith('/login/'):
             data, err = doc_json(request)
@@ -62,10 +83,10 @@ class AuthView(View):
             username = data.get('username')
             password = data.get('password')
             try:
-                user = User.objects.get(username=username,
-                                        password=password,
-                                        is_active=True)
+                user = User.objects.get(username=username, is_active=True)
             except User.DoesNotExist:
+                return phan_hoi(error='Sai username hoặc mật khẩu', status=400)
+            if not kiem_tra_mat_khau(user, password):
                 return phan_hoi(error='Sai username hoặc mật khẩu', status=400)
 
             # Lưu session
@@ -125,9 +146,9 @@ class AuthView(View):
         if path.endswith('/change-password/'):
             mat_khau_cu = data.get('old_password')
             mat_khau_moi = data.get('new_password')
-            if user.password != mat_khau_cu:
+            if not kiem_tra_mat_khau(user, mat_khau_cu):
                 return phan_hoi(error='Mật khẩu cũ không đúng', status=400)
-            user.password = mat_khau_moi
+            user.password = ma_hoa_mat_khau(mat_khau_moi)
             user.save()
             return phan_hoi(message='Đổi mật khẩu thành công')
 
@@ -185,7 +206,7 @@ class UserView(View):
             return phan_hoi(error='Username đã tồn tại', status=400)
 
         u = User.objects.create(
-            username=data['username'], password=data['password'],
+            username=data['username'], password=ma_hoa_mat_khau(data['password']),
             email=data['email'],       role=data['role'])
         return phan_hoi(data={'id': u.id, 'username': u.username},
                         message='Tạo tài khoản thành công', status=201)
@@ -205,6 +226,8 @@ class UserView(View):
         u.email     = data.get('email',     u.email)
         u.role      = data.get('role',      u.role)
         u.is_active = data.get('is_active', u.is_active)
+        if data.get('password'):
+            u.password = ma_hoa_mat_khau(data['password'])
         u.save()
         return phan_hoi(message='Cập nhật tài khoản thành công')
 
@@ -321,7 +344,7 @@ class EmployeeView(View):
             return phan_hoi(error=msg, status=400)
 
         u = User.objects.create(
-            username=data['username'], password=data['password'],
+            username=data['username'], password=ma_hoa_mat_khau(data['password']),
             email=data['email'],       role='le_tan')
         emp = Employee.objects.create(
             user=u, department_id=data['department_id'],
@@ -1097,3 +1120,4 @@ class ReportView(View):
             return phan_hoi(data=svc.top_dich_vu(top_n))
 
         return phan_hoi(error='Endpoint không tồn tại', status=404)
+

@@ -24,18 +24,24 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ============================================================
 -- 1. USER
 -- Role: quan_ly / le_tan
+-- Mat khau demo:
+-- ql001 / MyChi@123
+-- lt001 / Chuyen@123
+-- lt002 / DucMinh@123
+-- Cac tai khoan lt003-lt006 dung mat khau demo: 123456
+-- Gia tri cot password la hash pbkdf2_sha256 cua Django.
 -- ============================================================
 
 INSERT INTO `User` 
 (id, username, password, email, role, is_active) 
 VALUES
-(1, 'ql001', '123456', 'mychi@hotel.vn',       'quan_ly', 1),
-(2, 'lt001', '123456', 'chuyen@hotel.vn',      'le_tan',  1),
-(3, 'lt002', '123456', 'ducminh@hotel.vn',     'le_tan',  1),
-(4, 'lt003', '123456', 'trantanqui@hotel.vn',  'le_tan',  1),
-(5, 'lt004', '123456', 'phamanhtai@hotel.vn',  'le_tan',  1),
-(6, 'lt005', '123456', 'thanhtung@hotel.vn',   'le_tan',  1),
-(7, 'lt006', '123456', 'minhhoang@hotel.vn',   'le_tan',  1);
+(1, 'ql001', 'pbkdf2_sha256$1200000$TIzBdapSpY71TxwXIbCq2y$y8dEgDXRrgMn6naEHIjApU9ISGRGFRSCHaxrRqgaGJM=', 'mychi@hotel.vn',       'quan_ly', 1),
+(2, 'lt001', 'pbkdf2_sha256$1200000$jQOqWoxWkU42eZbKK2OXMA$tb3TLzFkNAabXXt6bWCqPKZsMHMNDwThXA22e3iEniI=', 'chuyen@hotel.vn',      'le_tan',  1),
+(3, 'lt002', 'pbkdf2_sha256$1200000$nMg1YxEeiQ71QczAVWtBaR$OLsEr5QlUxwczMQvp1IkWIwfCcV6WoLm/Z4aIa8EvPU=', 'ducminh@hotel.vn',     'le_tan',  1),
+(4, 'lt003', 'pbkdf2_sha256$1200000$0ubMRYuiTDlnDNG5tiHxWF$D80mgJdBHmD5ALTBQ8sqZe9O2h4eDxht2AAUkmo84TY=', 'trantanqui@hotel.vn',  'le_tan',  1),
+(5, 'lt004', 'pbkdf2_sha256$1200000$3klZyIiMIS8n2O5v1hwA5t$lAYhC3I/lBrD/5bDFS39PpZ2ls03zd7BCTCDqHmaB3w=', 'phamanhtai@hotel.vn',  'le_tan',  1),
+(6, 'lt005', 'pbkdf2_sha256$1200000$yKNHNh8gS6efNiIrSeH9QY$z9W9DAFodW2puRc7247kefLXCH+Pte57ra7SB/A1/Vs=', 'thanhtung@hotel.vn',   'le_tan',  1),
+(7, 'lt006', 'pbkdf2_sha256$1200000$PmTQCQO09VzO79sN5Nryvx$oK5ohk0m45/nN0r0lQMbd+kA8P9Ro4gSnoKFPBYGRQw=', 'minhhoang@hotel.vn',   'le_tan',  1);
 
 -- ============================================================
 -- 2. DEPARTMENT
