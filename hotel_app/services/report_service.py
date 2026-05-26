@@ -1,29 +1,9 @@
-"""
-hotel/services/report_service.py
-Thống kê doanh thu, tình trạng phòng, đặt phòng, dịch vụ
-"""
-from abc import ABC, abstractmethod
+"""Report business logic."""
 
 
-class ABCReportService(ABC):
-    """Lớp trừu tượng – interface cho thống kê"""
-
-    @abstractmethod
-    def thong_ke_doanh_thu(self, tu_ngay=None, den_ngay=None):
-        # Tinh tong doanh thu tu cac hoa don da thanh toan, co the loc theo ngay.
-        pass
-
-    @abstractmethod
-    def thong_ke_trang_thai_phong(self):
-        # Dem so phong theo tung trang thai hien tai.
-        pass
-
-
-class ReportService(ABCReportService):
-    """Quản lý thống kê – kế thừa ABCReportService"""
+class ReportService:
 
     def thong_ke_doanh_thu(self, tu_ngay=None, den_ngay=None):
-        """Thống kê tổng doanh thu và số hóa đơn đã thanh toán"""
         from hotel_app.models import Invoice
         from django.db.models import Sum
 
@@ -42,7 +22,6 @@ class ReportService(ABCReportService):
         }
 
     def thong_ke_trang_thai_phong(self):
-        """Thống kê số phòng theo trạng thái"""
         from hotel_app.models import Room
         qs = Room.objects.all()
         return {
@@ -53,8 +32,6 @@ class ReportService(ABCReportService):
         }
 
     def thong_ke_dat_phong(self, tu_ngay=None, den_ngay=None):
-        # Dem so booking theo trang thai, co the loc theo ngay tao.
-        """Thống kê số lượng booking theo trạng thái"""
         from hotel_app.models import Booking
 
         qs = Booking.objects.all()
@@ -73,8 +50,6 @@ class ReportService(ABCReportService):
         }
 
     def top_dich_vu(self, top_n=5):
-        # Lay top dich vu duoc su dung nhieu nhat theo tong so luong.
-        """Thống kê các dịch vụ được sử dụng nhiều nhất"""
         from hotel_app.models import BookingService
         from django.db.models import Sum
 
@@ -97,4 +72,3 @@ class ReportService(ABCReportService):
 
     def __str__(self):
         return 'ReportService()'
-

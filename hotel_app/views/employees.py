@@ -1,74 +1,42 @@
-"""Employee management APIs."""
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+"""DRF viewsets for this API group."""
+from core import messages as msg
+from core.api import ApiResponseModelViewSet
 
-from core.utils import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
-from core.validators import kiem_tra_truong_bat_buoc
+from hotel_app.models import Employee
+from hotel_app.permissions import ManagerOnly, SessionAuthenticated
+from hotel_app.serializers import (
+    EmployeeCreateSerializer, EmployeeSerializer, EmployeeUpdateSerializer,
+)
 from hotel_app.services.employee_service import EmployeeService
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class EmployeeView(View):
-    def get(self, request, pk=None):
-        # GET /api/employees/ va /api/employees/<id>/ - xem nhan vien.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
+class EmployeeViewSet(ApiResponseModelViewSet):
+    """ViewSet for Employee management."""
+    queryset = Employee.objects.select_related('user', 'department').filter(
+        is_deleted=False
+    )
+    response_serializer_class = EmployeeSerializer
+    success_messages = {
+        'create': msg.EMPLOYEE_CREATED,
+        'update': msg.EMPLOYEE_UPDATED,
+        'destroy': msg.EMPLOYEE_DISABLED,
+    }
+    filterset_fields = ['department', 'status', 'shift']
+    search_fields = ['full_name', 'phone', 'user__username', 'user__email']
+    ordering_fields = ['created_at', 'full_name', 'department']
+    ordering = ['-created_at']
 
-        svc = EmployeeService()
-        if pk:
-            data, err_msg = svc.lay_chi_tiet(pk)
-            if not data:
-                return phan_hoi(error=err_msg, status=404)
-            return phan_hoi(data=data)
-        return phan_hoi(data=svc.lay_danh_sach())
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [SessionAuthenticated(), ManagerOnly()]
+        return [SessionAuthenticated()]
 
-    def post(self, request):
-        # POST /api/employees/ - quan ly tao user le tan va ho so nhan vien.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-        ok, msg = kiem_tra_truong_bat_buoc(
-            data,
-            ['username', 'password', 'email', 'department_id',
-             'full_name', 'phone', 'hire_date'],
-        )
-        if not ok:
-            return phan_hoi(error=msg, status=400)
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return EmployeeCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return EmployeeUpdateSerializer
+        return EmployeeSerializer
 
-        employee = EmployeeService().tao(data)
-        return phan_hoi(
-            data={'id': employee.id, 'full_name': employee.full_name},
-            message='Thêm nhân viên thành công',
-            status=201,
-        )
-
-    def put(self, request, pk):
-        # PUT /api/employees/<id>/ - quan ly cap nhat ho so nhan vien.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        employee, err_msg = EmployeeService().cap_nhat(pk, data)
-        if not employee:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Cập nhật nhân viên thành công')
-
-    def delete(self, request, pk):
-        # DELETE /api/employees/<id>/ - cho nhan vien nghi viec va khoa user.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-
-        employee, err_msg = EmployeeService().vo_hieu_hoa(pk)
-        if not employee:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Đã vô hiệu hóa nhân viên')
-
+    def perform_destroy(self, employee):
+        EmployeeService().disable(employee)

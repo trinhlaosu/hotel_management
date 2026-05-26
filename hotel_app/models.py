@@ -1,14 +1,32 @@
-"""
-Models – 10 bảng CSDL cho hệ thống Quản lý Khách sạn (nội bộ)
-Áp dụng: Lập trình hướng đối tượng (kế thừa django.db.models.Model)
-"""
+"""Cac model chinh cua he thong quan ly khach san."""
 from django.db import models
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 1: User – Tài khoản nội bộ (Quản lý / Lễ tân)               #
-# ------------------------------------------------------------------ #
-class User(models.Model):
+# Abstract Base Model cho timestamp
+class TimestampedModel(models.Model):
+    """Abstract model for timestamp fields."""
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        abstract = True
+
+
+# Custom Manager cho soft delete
+class ActiveManager(models.Manager):
+    """Manager that filters out soft-deleted objects."""
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
+class AllObjectsManager(models.Manager):
+    """Manager that returns all objects including soft-deleted."""
+    pass
+
+
+# Bang 1: Tai khoan
+class User(TimestampedModel):
     ROLE_CHOICES = [
         ('quan_ly', 'Quản lý'),
         ('le_tan',  'Lễ tân / Nhân viên'),
@@ -20,33 +38,48 @@ class User(models.Model):
     role       = models.CharField(max_length=20, choices=ROLE_CHOICES,
                                   default='le_tan')
     is_active  = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
 
     class Meta:
         db_table = 'User'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['username']),
+            models.Index(fields=['email']),
+        ]
 
     def __str__(self):
         return str([self.id, self.username, self.role])
 
+    @property
+    def is_authenticated(self):
+        return True
 
-# ------------------------------------------------------------------ #
-#  BẢNG 2: Department – Phòng ban                                     #
-# ------------------------------------------------------------------ #
-class Department(models.Model):
+    @property
+    def is_anonymous(self):
+        return False
+
+
+# Bang 2: Phong ban
+class Department(TimestampedModel):
     name        = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Department'
+        ordering = ['name']
 
     def __str__(self):
         return str([self.id, self.name])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 3: Employee – Hồ sơ nhân viên                                #
-# ------------------------------------------------------------------ #
-class Employee(models.Model):
+# Bang 3: Nhan vien
+class Employee(TimestampedModel):
     SHIFT_CHOICES = [
         ('sang',  'Ca sáng'),
         ('chieu', 'Ca chiều'),
@@ -64,24 +97,29 @@ class Employee(models.Model):
     full_name   = models.CharField(max_length=100)
     phone       = models.CharField(max_length=15)
     salary      = models.DecimalField(max_digits=15, decimal_places=0,
-                                      default=0)        # Đơn vị: VNĐ
+                                      default=0)        # VND
     hire_date   = models.DateField()
     shift       = models.CharField(max_length=20, choices=SHIFT_CHOICES,
                                    default='sang')
     status      = models.CharField(max_length=20, choices=STATUS_CHOICES,
                                    default='dang_lam')
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Employee'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['department', 'status']),
+        ]
 
     def __str__(self):
         return str([self.id, self.full_name, self.get_shift_display()])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 4: Customer – Khách hàng (do nhân viên nhập)                 #
-# ------------------------------------------------------------------ #
-class Customer(models.Model):
+# Bang 4: Khach hang
+class Customer(TimestampedModel):
     CUSTOMER_TYPE_CHOICES = [
         ('regular', 'Thường'),
         ('vip',     'VIP'),
@@ -90,40 +128,47 @@ class Customer(models.Model):
     full_name     = models.CharField(max_length=100)
     phone         = models.CharField(max_length=15, unique=True)
     email         = models.EmailField(blank=True, null=True)
-    id_card       = models.CharField(max_length=20, unique=True)  # Số CCCD
+    id_card       = models.CharField(max_length=20, unique=True)  # CCCD
     address       = models.TextField(blank=True, null=True)
     customer_type = models.CharField(max_length=20,
                                      choices=CUSTOMER_TYPE_CHOICES,
                                      default='regular')
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Customer'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['phone']),
+            models.Index(fields=['id_card']),
+        ]
 
     def __str__(self):
         return str([self.id, self.full_name, self.customer_type])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 5: RoomType – Loại phòng                                      #
-# ------------------------------------------------------------------ #
-class RoomType(models.Model):
+# Bang 5: Loai phong
+class RoomType(TimestampedModel):
     name            = models.CharField(max_length=50, unique=True)
     price_per_night = models.DecimalField(max_digits=15, decimal_places=0)
-                                                         # Đơn vị: VNĐ
     capacity        = models.IntegerField(default=2)
     description     = models.TextField(blank=True, null=True)
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'RoomType'
+        ordering = ['name']
 
     def __str__(self):
         return str([self.id, self.name, float(self.price_per_night)])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 6: Room – Phòng khách sạn                                     #
-# ------------------------------------------------------------------ #
-class Room(models.Model):
+# Bang 6: Phong
+class Room(TimestampedModel):
     STATUS_CHOICES = [
         ('trong',    'Còn trống'),
         ('co_khach', 'Có khách'),
@@ -137,17 +182,22 @@ class Room(models.Model):
     status      = models.CharField(max_length=20, choices=STATUS_CHOICES,
                                    default='trong')
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Room'
+        ordering = ['floor', 'room_number']
+        indexes = [
+            models.Index(fields=['room_type', 'status']),
+        ]
 
     def __str__(self):
         return str([self.id, self.room_number, self.status])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 7: Booking – Đặt phòng                                        #
-# ------------------------------------------------------------------ #
-class Booking(models.Model):
+# Bang 7: Dat phong
+class Booking(TimestampedModel):
     STATUS_CHOICES = [
         ('cho_xac_nhan', 'Chờ xác nhận'),
         ('da_xac_nhan',  'Đã xác nhận'),
@@ -168,19 +218,24 @@ class Booking(models.Model):
     created_by = models.ForeignKey(Employee, on_delete=models.SET_NULL,
                                    null=True, blank=True,
                                    related_name='created_bookings')
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
 
     class Meta:
         db_table = 'Booking'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['customer', 'status']),
+            models.Index(fields=['room', 'check_in', 'check_out']),
+        ]
 
     def __str__(self):
         return str([self.id, self.customer_id, self.room_id, self.status])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 8: Invoice – Hóa đơn                                          #
-# ------------------------------------------------------------------ #
-class Invoice(models.Model):
+# Bang 8: Hoa don
+class Invoice(TimestampedModel):
     PAYMENT_STATUS_CHOICES = [
         ('chua_thanh_toan', 'Chưa thanh toán'),
         ('da_thanh_toan',   'Đã thanh toán'),
@@ -194,11 +249,11 @@ class Invoice(models.Model):
     booking        = models.OneToOneField(Booking, on_delete=models.CASCADE,
                                           related_name='invoice')
     room_charge    = models.DecimalField(max_digits=15, decimal_places=0,
-                                         default=0)   # Tiền phòng (VNĐ)
+                                         default=0)   # Tien phong
     service_charge = models.DecimalField(max_digits=15, decimal_places=0,
-                                         default=0)   # Tiền dịch vụ (VNĐ)
+                                         default=0)   # Tien dich vu
     total          = models.DecimalField(max_digits=15, decimal_places=0,
-                                         default=0)   # Tổng tiền (VNĐ)
+                                         default=0)   # Tong tien
     payment_status = models.CharField(max_length=20,
                                       choices=PAYMENT_STATUS_CHOICES,
                                       default='chua_thanh_toan')
@@ -207,46 +262,52 @@ class Invoice(models.Model):
                                       null=True, blank=True)
     paid_at        = models.DateTimeField(null=True, blank=True)
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Invoice'
+        ordering = ['-created_at']
 
     def __str__(self):
         return str([self.id, self.booking_id, float(self.total),
                     self.payment_status])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 9: Service – Dịch vụ                                          #
-# ------------------------------------------------------------------ #
-class Service(models.Model):
+# Bang 9: Dich vu
+class Service(TimestampedModel):
     name        = models.CharField(max_length=100, unique=True)
     price       = models.DecimalField(max_digits=15, decimal_places=0)
-                                                      # Đơn vị: VNĐ
     description = models.TextField(blank=True, null=True)
     is_active   = models.BooleanField(default=True)
 
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
+
     class Meta:
         db_table = 'Service'
+        ordering = ['name']
 
     def __str__(self):
         return str([self.id, self.name, float(self.price)])
 
 
-# ------------------------------------------------------------------ #
-#  BẢNG 10: BookingService – Dịch vụ sử dụng theo booking            #
-# ------------------------------------------------------------------ #
-class BookingService(models.Model):
+# Bang 10: Dich vu theo booking
+class BookingService(TimestampedModel):
     booking  = models.ForeignKey(Booking, on_delete=models.CASCADE,
                                  related_name='booking_services')
     service  = models.ForeignKey(Service, on_delete=models.RESTRICT,
                                  related_name='booking_services')
     quantity = models.IntegerField(default=1)
     subtotal = models.DecimalField(max_digits=15, decimal_places=0,
-                                   default=0)   # quantity x price (VNĐ)
-    used_at  = models.DateTimeField(auto_now_add=True)
+                                   default=0)   # quantity x price
+
+    objects = ActiveManager()
+    all_objects = AllObjectsManager()
 
     class Meta:
         db_table = 'BookingService'
+        ordering = ['-created_at']
 
     def __str__(self):
         return str([self.id, self.booking_id, self.service_id,

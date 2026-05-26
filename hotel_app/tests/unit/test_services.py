@@ -1,11 +1,9 @@
-"""
-test_services.py – Kiểm thử tầng Services (OOP nghiệp vụ)
-Chạy: python manage.py test hotel.tests.test_services
-"""
+"""Service tests."""
 from django.test import TestCase
-from hotel_app.models import (User, Department, Employee, Customer,
-                           RoomType, Room, Booking, Invoice,
-                           Service, BookingService as BookingServiceModel)
+from hotel_app.models import (
+    Customer, RoomType, Room, Booking, Service,
+    BookingService as BookingServiceModel,
+)
 from hotel_app.services.room_service    import RoomService
 from hotel_app.services.booking_service import BookingService as BookingWorkflowService
 from hotel_app.services.invoice_service import InvoiceService
@@ -13,11 +11,7 @@ from hotel_app.services.report_service  import ReportService
 from datetime import date
 
 
-# ──────────────────────────────────────────────────────────────────
-#  Dữ liệu mẫu dùng chung cho nhiều test class
-# ──────────────────────────────────────────────────────────────────
 class BaseTestData(TestCase):
-    """Tạo dữ liệu mẫu dùng chung"""
 
     @classmethod
     def setUpTestData(cls):
@@ -37,17 +31,12 @@ class BaseTestData(TestCase):
             name='Ăn sáng', price=150000, is_active=True)
 
 
-# ──────────────────────────────────────────────────────────────────
-#  RoomService
-# ──────────────────────────────────────────────────────────────────
 class RoomServiceTest(BaseTestData):
-    """Kiểm thử RoomService"""
 
     def setUp(self):
         self.svc = RoomService()
 
     def test_kiem_tra_phong_trong_khi_khong_co_booking(self):
-        """Phòng không có booking → còn trống"""
         ket_qua = self.svc.kiem_tra_trong(
             self.room.id,
             date(2026, 6, 10),
@@ -56,7 +45,6 @@ class RoomServiceTest(BaseTestData):
         self.assertTrue(ket_qua)
 
     def test_kiem_tra_phong_da_co_booking(self):
-        """Phòng đã có booking trùng lịch → không trống"""
         Booking.objects.create(
             customer=self.customer,
             room=self.room,
@@ -64,7 +52,6 @@ class RoomServiceTest(BaseTestData):
             check_out=date(2026, 6, 13),
             status='da_xac_nhan'
         )
-        # Hỏi cùng khoảng thời gian → không trống
         ket_qua = self.svc.kiem_tra_trong(
             self.room.id,
             date(2026, 6, 11),
@@ -73,7 +60,6 @@ class RoomServiceTest(BaseTestData):
         self.assertFalse(ket_qua)
 
     def test_kiem_tra_phong_truoc_booking(self):
-        """Ngày hỏi trước ngày có booking → vẫn còn trống"""
         Booking.objects.create(
             customer=self.customer,
             room=self.room,
@@ -81,7 +67,6 @@ class RoomServiceTest(BaseTestData):
             check_out=date(2026, 6, 18),
             status='da_xac_nhan'
         )
-        # Hỏi trước ngày booking
         ket_qua = self.svc.kiem_tra_trong(
             self.room.id,
             date(2026, 6, 10),
@@ -90,22 +75,18 @@ class RoomServiceTest(BaseTestData):
         self.assertTrue(ket_qua)
 
     def test_cap_nhat_trang_thai_thanh_cong(self):
-        """Cập nhật trạng thái phòng → lưu đúng vào CSDL"""
         ok, room = self.svc.cap_nhat_trang_thai(self.room.id, 'bao_tri')
         self.assertTrue(ok)
         self.assertEqual(room.status, 'bao_tri')
-        # Kiểm tra trong DB
         self.room.refresh_from_db()
         self.assertEqual(self.room.status, 'bao_tri')
 
     def test_cap_nhat_trang_thai_phong_khong_ton_tai(self):
-        """Cập nhật phòng không tồn tại → trả về False"""
         ok, room = self.svc.cap_nhat_trang_thai(9999, 'trong')
         self.assertFalse(ok)
         self.assertIsNone(room)
 
     def test_lay_thong_ke_phong(self):
-        """Thống kê phòng trả về đúng số lượng"""
         Room.objects.create(
             room_type=self.room_type,
             room_number='102', floor=1, status='co_khach')
@@ -116,44 +97,34 @@ class RoomServiceTest(BaseTestData):
         self.assertGreaterEqual(thong_ke['tong'], 2)
 
     def test_ten_service(self):
-        """Property ten_service trả về tên đúng"""
         self.assertEqual(self.svc.ten_service, 'RoomService')
 
 
-# ──────────────────────────────────────────────────────────────────
-#  BookingService
-# ──────────────────────────────────────────────────────────────────
 class BookingServiceTest(BaseTestData):
-    """Kiểm thử BookingService"""
 
     def setUp(self):
         self.svc = BookingWorkflowService()
 
     def test_tinh_so_dem(self):
-        """3 đêm từ 10/6 đến 13/6"""
         so_dem = self.svc.tinh_so_dem(
             date(2026, 6, 10), date(2026, 6, 13))
         self.assertEqual(so_dem, 3)
 
     def test_tinh_so_dem_tu_string(self):
-        """Nhận chuỗi ISO format vẫn tính đúng"""
         so_dem = self.svc.tinh_so_dem('2026-06-10', '2026-06-15')
         self.assertEqual(so_dem, 5)
 
     def test_tinh_tien_phong(self):
-        """3 đêm × 500.000 VNĐ = 1.500.000 VNĐ"""
         booking = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 6, 10), check_out=date(2026, 6, 13),
             status='cho_xac_nhan')
-        # Cần select_related để lấy room_type
         booking = Booking.objects.select_related(
             'room__room_type').get(id=booking.id)
         tien = self.svc.tinh_tien_phong(booking)
         self.assertEqual(tien, 1500000.0)   # 3 × 500.000
 
     def test_tao_booking_thanh_cong(self):
-        """Tạo booking với phòng trống → thành công"""
         data = {
             'customer_id': self.customer.id,
             'room_id':     self.room.id,
@@ -166,14 +137,11 @@ class BookingServiceTest(BaseTestData):
         self.assertEqual(booking.status, 'cho_xac_nhan')
 
     def test_tao_booking_phong_trung_lich(self):
-        """Tạo booking khi phòng đã có lịch → trả về lỗi"""
-        # Tạo booking trước
         Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 6, 20), check_out=date(2026, 6, 23),
             status='da_xac_nhan')
 
-        # Tạo booking trùng lịch
         data = {
             'customer_id': self.customer.id,
             'room_id':     self.room.id,
@@ -186,7 +154,6 @@ class BookingServiceTest(BaseTestData):
         self.assertIn('đã có người đặt', err)
 
     def test_xac_nhan_booking(self):
-        """Xác nhận booking → trạng thái thành 'da_xac_nhan'"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 7, 1), check_out=date(2026, 7, 3),
@@ -197,7 +164,6 @@ class BookingServiceTest(BaseTestData):
         self.assertEqual(result.status, 'da_xac_nhan')
 
     def test_xac_nhan_booking_sai_trang_thai(self):
-        """Không thể xác nhận booking đang ở"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 7, 5), check_out=date(2026, 7, 7),
@@ -207,7 +173,6 @@ class BookingServiceTest(BaseTestData):
         self.assertIsNotNone(err)
 
     def test_huy_booking(self):
-        """Hủy booking → trạng thái thành 'da_huy'"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 8, 1), check_out=date(2026, 8, 3),
@@ -217,7 +182,6 @@ class BookingServiceTest(BaseTestData):
         self.assertEqual(result.status, 'da_huy')
 
     def test_check_in(self):
-        """Check-in → booking 'dang_o', phòng 'co_khach'"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 9, 1), check_out=date(2026, 9, 3),
@@ -225,12 +189,10 @@ class BookingServiceTest(BaseTestData):
         result, err = self.svc.check_in(b.id)
         self.assertIsNotNone(result)
         self.assertEqual(result.status, 'dang_o')
-        # Kiểm tra phòng → co_khach
         self.room.refresh_from_db()
         self.assertEqual(self.room.status, 'co_khach')
 
     def test_check_in_chua_xac_nhan(self):
-        """Không thể check-in khi booking chưa được xác nhận"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 9, 5), check_out=date(2026, 9, 7),
@@ -240,12 +202,10 @@ class BookingServiceTest(BaseTestData):
         self.assertIsNotNone(err)
 
     def test_check_out(self):
-        """Check-out → booking 'da_tra_phong', phòng 'trong'"""
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 10, 1), check_out=date(2026, 10, 4),
             status='dang_o')
-        # Cập nhật phòng thành co_khach
         self.room.status = 'co_khach'
         self.room.save()
 
@@ -254,7 +214,6 @@ class BookingServiceTest(BaseTestData):
         result, err = self.svc.check_out(b_full.id)
         self.assertIsNotNone(result)
         self.assertEqual(result.status, 'da_tra_phong')
-        # Phòng về trống
         self.room.refresh_from_db()
         self.assertEqual(self.room.status, 'trong')
 
@@ -262,11 +221,7 @@ class BookingServiceTest(BaseTestData):
         self.assertEqual(self.svc.ten_service, 'BookingService')
 
 
-# ──────────────────────────────────────────────────────────────────
-#  InvoiceService
-# ──────────────────────────────────────────────────────────────────
 class InvoiceServiceTest(BaseTestData):
-    """Kiểm thử InvoiceService"""
 
     def setUp(self):
         self.svc = InvoiceService()
@@ -274,24 +229,20 @@ class InvoiceServiceTest(BaseTestData):
             customer=self.customer, room=self.room,
             check_in=date(2026, 6, 10), check_out=date(2026, 6, 13),
             status='dang_o')
-        # Cần select_related
         self.booking = Booking.objects.select_related(
             'room__room_type').get(id=self.booking.id)
 
     def test_tao_hoa_don(self):
-        """Tạo hóa đơn → tính đúng tiền phòng (3 đêm × 500.000)"""
         invoice = self.svc.tao_hoa_don(self.booking)
         self.assertIsNotNone(invoice)
         self.assertEqual(float(invoice.room_charge), 1500000.0)
         self.assertEqual(invoice.payment_status, 'chua_thanh_toan')
 
     def test_tao_hoa_don_co_dich_vu(self):
-        """Hóa đơn gồm tiền phòng + tiền dịch vụ"""
         BookingServiceModel.objects.create(
             booking=self.booking, service=self.service,
             quantity=2, subtotal=300000)   # 2 × 150.000
         invoice = self.svc.tao_hoa_don(self.booking)
-        # Tạo lại để lấy giá trị mới
         self.svc.cap_nhat_hoa_don(self.booking)
         invoice.refresh_from_db()
         self.assertEqual(float(invoice.service_charge), 300000.0)
@@ -299,7 +250,6 @@ class InvoiceServiceTest(BaseTestData):
                          float(invoice.room_charge) + 300000.0)
 
     def test_thanh_toan_thanh_cong(self):
-        """Thanh toán → payment_status thành 'da_thanh_toan'"""
         invoice = self.svc.tao_hoa_don(self.booking)
         result, err = self.svc.thanh_toan(invoice.id, 'tien_mat')
         self.assertIsNotNone(result)
@@ -309,7 +259,6 @@ class InvoiceServiceTest(BaseTestData):
         self.assertIsNotNone(result.paid_at)
 
     def test_thanh_toan_lan_2_bi_loi(self):
-        """Không thể thanh toán hóa đơn đã được thanh toán"""
         invoice = self.svc.tao_hoa_don(self.booking)
         self.svc.thanh_toan(invoice.id, 'tien_mat')      # Lần 1
         result, err = self.svc.thanh_toan(invoice.id, 'the')  # Lần 2
@@ -320,17 +269,12 @@ class InvoiceServiceTest(BaseTestData):
         self.assertEqual(self.svc.ten_service, 'InvoiceService')
 
 
-# ──────────────────────────────────────────────────────────────────
-#  ReportService
-# ──────────────────────────────────────────────────────────────────
 class ReportServiceTest(BaseTestData):
-    """Kiểm thử ReportService"""
 
     def setUp(self):
         self.svc = ReportService()
 
     def test_thong_ke_trang_thai_phong(self):
-        """Thống kê trả về đúng các key"""
         ket_qua = self.svc.thong_ke_trang_thai_phong()
         self.assertIn('tong', ket_qua)
         self.assertIn('trong', ket_qua)
@@ -341,13 +285,11 @@ class ReportServiceTest(BaseTestData):
                          + ket_qua['bao_tri'])
 
     def test_thong_ke_doanh_thu_trong(self):
-        """Doanh thu = 0 khi chưa có hóa đơn thanh toán"""
         ket_qua = self.svc.thong_ke_doanh_thu()
         self.assertEqual(ket_qua['tong_doanh_thu'], 0)
         self.assertEqual(ket_qua['so_hoa_don_da_tt'], 0)
 
     def test_thong_ke_dat_phong(self):
-        """Thống kê booking trả về đúng các key"""
         ket_qua = self.svc.thong_ke_dat_phong()
         self.assertIn('tong', ket_qua)
         self.assertIn('cho_xac_nhan', ket_qua)
@@ -356,8 +298,6 @@ class ReportServiceTest(BaseTestData):
         self.assertIn('da_huy', ket_qua)
 
     def test_top_dich_vu(self):
-        """Top dịch vụ trả về list, mỗi item có đủ key"""
-        # Tạo booking + dịch vụ sử dụng
         b = Booking.objects.create(
             customer=self.customer, room=self.room,
             check_in=date(2026, 6, 1), check_out=date(2026, 6, 3),
@@ -376,4 +316,3 @@ class ReportServiceTest(BaseTestData):
 
     def test_ten_service(self):
         self.assertEqual(self.svc.ten_service, 'ReportService')
-

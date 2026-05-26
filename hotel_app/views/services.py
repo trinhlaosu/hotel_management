@@ -1,142 +1,67 @@
-"""Hotel service and booking-service APIs."""
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+"""DRF viewsets for service APIs."""
+from core import messages as msg
+from core.api import ApiResponseModelViewSet, api_response, serializer_error_response
+from rest_framework import viewsets
 
-from core.utils import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
-from core.validators import kiem_tra_truong_bat_buoc
+from hotel_app.models import Service
+from hotel_app.permissions import ManagerOnly, SessionAuthenticated
+from hotel_app.serializers import (
+    BookingServiceUpdateSerializer, ServiceCreateSerializer,
+    ServiceSerializer, ServiceUpdateSerializer,
+)
 from hotel_app.services.service_service import HotelServiceService
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class ServiceView(View):
-    def get(self, request, pk=None):
-        # GET /api/services/ va /api/services/<id>/ - xem dich vu dang hoat dong/chi tiet.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
+class ServiceViewSet(ApiResponseModelViewSet):
+    queryset = Service.objects.filter(is_deleted=False)
+    response_serializer_class = ServiceSerializer
+    success_messages = {
+        'create': msg.SERVICE_CREATED,
+        'update': msg.SERVICE_UPDATED,
+        'destroy': msg.SERVICE_DELETED,
+    }
+    filterset_fields = ['is_active']
+    search_fields = ['name']
+    ordering_fields = ['name', 'price', 'created_at']
+    ordering = ['name']
 
-        svc = HotelServiceService()
-        if pk:
-            data, err_msg = svc.lay_chi_tiet_dich_vu(pk)
-            if not data:
-                return phan_hoi(error=err_msg, status=404)
-            return phan_hoi(data=data)
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [SessionAuthenticated(), ManagerOnly()]
+        return [SessionAuthenticated()]
 
-        return phan_hoi(data=svc.lay_danh_sach_dich_vu())
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            return queryset.filter(is_active=True)
+        return queryset
 
-    def post(self, request):
-        # POST /api/services/ - quan ly them dich vu moi.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-        ok, msg = kiem_tra_truong_bat_buoc(data, ['name', 'price'])
-        if not ok:
-            return phan_hoi(error=msg, status=400)
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ServiceCreateSerializer
+        if self.action in ['update', 'partial_update']:
+            return ServiceUpdateSerializer
+        return ServiceSerializer
 
-        service = HotelServiceService().tao_dich_vu(data)
-        return phan_hoi(
-            data={'id': service.id, 'name': service.name},
-            message='Thêm dịch vụ thành công',
-            status=201,
-        )
-
-    def put(self, request, pk):
-        # PUT /api/services/<id>/ - quan ly cap nhat dich vu.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        service, err_msg = HotelServiceService().cap_nhat_dich_vu(pk, data)
-        if not service:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Cập nhật dịch vụ thành công')
-
-    def delete(self, request, pk):
-        # DELETE /api/services/<id>/ - xoa mem dich vu bang is_active=False.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-
-        service, err_msg = HotelServiceService().xoa_mem_dich_vu(pk)
-        if not service:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Xóa dịch vụ thành công')
+    def perform_destroy(self, service):
+        HotelServiceService().deactivate_service(service)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class BookingServiceView(View):
-    """GET/POST /api/bookings/<pk>/services/."""
+class BookingServiceViewSet(viewsets.GenericViewSet):
+    permission_classes = [SessionAuthenticated]
 
-    def get(self, request, pk):
-        # GET /api/bookings/<id>/services/ - xem cac dich vu da dung cua booking.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        return phan_hoi(
-            data=HotelServiceService().lay_dich_vu_theo_booking(pk))
+    def update(self, request, pk=None):
+        serializer = BookingServiceUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return serializer_error_response(serializer)
+        item, err_msg, status_code = HotelServiceService().cap_nhat_booking_service(
+            pk, serializer.validated_data)
+        if not item:
+            return api_response(error=err_msg, status=status_code)
+        return api_response(message=msg.SERVICE_UPDATED)
 
-    def post(self, request, pk):
-        # POST /api/bookings/<id>/services/ - them dich vu vao booking va cap nhat hoa don.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-        ok, msg = kiem_tra_truong_bat_buoc(data, ['service_id', 'quantity'])
-        if not ok:
-            return phan_hoi(error=msg, status=400)
-
-        booking_service, err_msg, status = (
-            HotelServiceService().them_dich_vu_cho_booking(pk, data))
-        if not booking_service:
-            return phan_hoi(error=err_msg, status=status)
-        return phan_hoi(
-            data={
-                'id': booking_service.id,
-                'service': booking_service.service.name,
-                'quantity': booking_service.quantity,
-                'subtotal': float(booking_service.subtotal),
-            },
-            message='Thêm dịch vụ thành công',
-            status=201,
-        )
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class BookingServiceDetailView(View):
-    """PUT/DELETE /api/booking-services/<pk>/."""
-
-    def put(self, request, pk):
-        # PUT /api/booking-services/<id>/ - cap nhat so luong dich vu da dung.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        booking_service, err_msg, status = (
-            HotelServiceService().cap_nhat_booking_service(pk, data))
-        if not booking_service:
-            return phan_hoi(error=err_msg, status=status)
-        return phan_hoi(message='Cập nhật dịch vụ thành công')
-
-    def delete(self, request, pk):
-        # DELETE /api/booking-services/<id>/ - xoa dich vu khoi booking.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-
-        booking_service, err_msg = HotelServiceService().xoa_booking_service(pk)
-        if not booking_service:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Xóa dịch vụ thành công')
-
+    def destroy(self, request, pk=None):
+        item, err_msg = HotelServiceService().xoa_booking_service(pk)
+        if not item:
+            return api_response(error=err_msg, status=404)
+        return api_response(message=msg.SERVICE_DELETED)

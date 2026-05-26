@@ -1,17 +1,13 @@
-"""
-test_core.py – Kiểm thử tiện ích core (utils, validators)
-Chạy: python manage.py test hotel.tests.test_core
-"""
+"""Core utility tests."""
 from django.test import TestCase, RequestFactory
 from django.http import JsonResponse
-from core.utils      import phan_hoi, doc_json, kiem_tra_role, yeu_cau_dang_nhap
+from core.utils      import phan_hoi, doc_json, kiem_tra_role
 from core.validators import kiem_tra_truong_bat_buoc, kiem_tra_ngay
 from hotel_app.models    import User
 import json
 
 
 class PhanHoiTest(TestCase):
-    """Kiểm thử hàm phan_hoi()"""
 
     def test_tra_ve_200_mac_dinh(self):
         res = phan_hoi(data={'id': 1})
@@ -42,7 +38,6 @@ class PhanHoiTest(TestCase):
 
 
 class DocJsonTest(TestCase):
-    """Kiểm thử hàm doc_json()"""
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -67,7 +62,6 @@ class DocJsonTest(TestCase):
 
 
 class KiemTraTruongBatBuocTest(TestCase):
-    """Kiểm thử validators.kiem_tra_truong_bat_buoc()"""
 
     def test_du_truong(self):
         data = {'name': 'test', 'phone': '123'}
@@ -89,7 +83,6 @@ class KiemTraTruongBatBuocTest(TestCase):
 
 
 class KiemTraNgayTest(TestCase):
-    """Kiểm thử validators.kiem_tra_ngay()"""
 
     def test_ngay_hop_le(self):
         ok, msg = kiem_tra_ngay('2026-06-10', '2026-06-13')
@@ -112,7 +105,6 @@ class KiemTraNgayTest(TestCase):
 
 
 class KiemTraRoleTest(TestCase):
-    """Kiểm thử hàm kiem_tra_role()"""
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -121,10 +113,8 @@ class KiemTraRoleTest(TestCase):
             email='ql@t.com', role='quan_ly')
 
     def _make_request_with_session(self, user_id):
-        """Tạo request giả lập có session"""
         from django.test import Client
         client = Client()
-        # Giả lập session bằng cách đặt trực tiếp
         session = client.session
         session['user_id'] = user_id
         session.save()
@@ -152,4 +142,3 @@ class KiemTraRoleTest(TestCase):
         self.assertIsNone(user)
         self.assertIsNotNone(err)
         self.assertEqual(err.status_code, 403)
-

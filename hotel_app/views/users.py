@@ -1,75 +1,57 @@
-"""User account management APIs."""
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+"""DRF viewsets for this API group."""
+from core import messages as msg
+from core.api import ApiResponseModelViewSet, api_response
+from rest_framework.decorators import action
 
-from core.utils import phan_hoi, doc_json, kiem_tra_role
-from core.validators import kiem_tra_truong_bat_buoc
+from hotel_app.models import User
+from hotel_app.permissions import ManagerOnly, SessionAuthenticated
+from hotel_app.serializers import (
+    UserCreateSerializer, UserSerializer, UserUpdateSerializer,
+)
 from hotel_app.services.user_service import UserService
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserView(View):
-    def get(self, request, pk=None):
-        # GET /api/users/ va /api/users/<id>/ - quan ly xem danh sach/chi tiet user.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
+class UserViewSet(ApiResponseModelViewSet):
+    """ViewSet for User management."""
+    queryset = User.objects.select_related().filter(is_deleted=False)
+    permission_classes = [SessionAuthenticated, ManagerOnly]
+    response_serializer_class = UserSerializer
+    success_messages = {
+        'create': msg.USER_CREATED,
+        'update': msg.USER_UPDATED,
+        'destroy': msg.USER_DISABLED,
+    }
+    filterset_fields = ['role', 'is_active']
+    search_fields = ['username', 'email']
+    ordering_fields = ['created_at', 'username']
+    ordering = ['-created_at']
 
-        svc = UserService()
-        if pk:
-            data, err_msg = svc.lay_chi_tiet(pk)
-            if not data:
-                return phan_hoi(error=err_msg, status=404)
-            return phan_hoi(data=data)
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UserUpdateSerializer
+        return UserSerializer
 
-        return phan_hoi(data=svc.lay_danh_sach())
+    def perform_destroy(self, user):
+        UserService().disable(user)
 
-    def post(self, request):
-        # POST /api/users/ - quan ly tao tai khoan noi bo moi.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[SessionAuthenticated, ManagerOnly],
+    )
+    def disable(self, request, pk=None):
+        """Disable a user account."""
+        user = UserService().disable(self.get_object())
+        return api_response(data=UserSerializer(user).data, message=msg.USER_DISABLED)
 
-        ok, msg = kiem_tra_truong_bat_buoc(
-            data, ['username', 'password', 'email', 'role'])
-        if not ok:
-            return phan_hoi(error=msg, status=400)
-
-        new_user, err_msg = UserService().tao_tai_khoan(data)
-        if not new_user:
-            return phan_hoi(error=err_msg, status=400)
-        return phan_hoi(
-            data={'id': new_user.id, 'username': new_user.username},
-            message='Tạo tài khoản thành công',
-            status=201,
-        )
-
-    def put(self, request, pk):
-        # PUT /api/users/<id>/ - cap nhat email, role, active, password neu co.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        updated_user, err_msg = UserService().cap_nhat(pk, data)
-        if not updated_user:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Cập nhật tài khoản thành công')
-
-    def delete(self, request, pk):
-        # DELETE /api/users/<id>/ - vo hieu hoa tai khoan thay vi xoa cung.
-        user, err = kiem_tra_role(request, ['quan_ly'])
-        if err:
-            return err
-
-        disabled_user, err_msg = UserService().vo_hieu_hoa(pk)
-        if not disabled_user:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(message='Vô hiệu hóa tài khoản thành công')
-
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[SessionAuthenticated, ManagerOnly],
+    )
+    def enable(self, request, pk=None):
+        """Enable a user account."""
+        user = UserService().enable(self.get_object())
+        return api_response(data=UserSerializer(user).data, message=msg.USER_UPDATED)

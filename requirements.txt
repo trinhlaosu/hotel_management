@@ -1,2 +1,4 @@
 django>=4.2
+djangorestframework>=3.17
+django-filter>=25.1
 mysqlclient>=2.2

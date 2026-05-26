@@ -2,6 +2,8 @@
 import json
 from django.http import JsonResponse
 
+from core import messages as msg
+
 
 def phan_hoi(data=None, message='', status=200, error=''):
     """Tra ve JSON theo mot mau chung."""
@@ -12,15 +14,24 @@ def phan_hoi(data=None, message='', status=200, error=''):
         body['error'] = error
     if data is not None:
         body['data'] = data
-    return JsonResponse(body, status=status)
+    return JsonResponse(
+        body,
+        status=status,
+        json_dumps_params={'ensure_ascii': False},
+    )
 
 
 def doc_json(request):
     """Doc JSON tu request body."""
+    if hasattr(request, 'data'):
+        try:
+            return request.data, None
+        except Exception:
+            return None, phan_hoi(error=msg.JSON_INVALID, status=400)
     try:
         return json.loads(request.body), None
     except Exception:
-        return None, phan_hoi(error='JSON không hợp lệ', status=400)
+        return None, phan_hoi(error=msg.JSON_INVALID, status=400)
 
 
 def lay_user_hien_tai(request):
@@ -39,9 +50,9 @@ def kiem_tra_role(request, ds_role):
     """Kiem tra user co dung quyen khong."""
     user = lay_user_hien_tai(request)
     if not user:
-        return None, phan_hoi(error='Chưa đăng nhập', status=401)
+        return None, phan_hoi(error=msg.AUTH_REQUIRED, status=401)
     if user.role not in ds_role:
-        return None, phan_hoi(error='Không có quyền thực hiện', status=403)
+        return None, phan_hoi(error=msg.AUTH_FORBIDDEN, status=403)
     return user, None
 
 
@@ -49,6 +60,6 @@ def yeu_cau_dang_nhap(request):
     """Kiem tra user da dang nhap."""
     user = lay_user_hien_tai(request)
     if not user:
-        return None, phan_hoi(error='Chưa đăng nhập', status=401)
+        return None, phan_hoi(error=msg.AUTH_REQUIRED, status=401)
     return user, None
 

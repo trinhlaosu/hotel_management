@@ -1,16 +1,15 @@
-"""Authentication and profile business logic."""
+"""Authentication business logic."""
+from core import messages as msg
 from django.contrib.auth.hashers import check_password, make_password
 
 from hotel_app.models import User, Employee
 
 
 def ma_hoa_mat_khau(mat_khau):
-    # Hash mat khau bang Django password hasher truoc khi luu DB.
     return make_password(mat_khau)
 
 
 def kiem_tra_mat_khau(user, mat_khau):
-    # Kiem tra mat khau hash; neu gap password plain cu thi tu dong hash lai.
     if not mat_khau:
         return False
     if check_password(mat_khau, user.password):
@@ -23,12 +22,30 @@ def kiem_tra_mat_khau(user, mat_khau):
 
 
 class AuthService:
+    def lay_ten_hien_thi(self, user):
+        try:
+            emp = Employee.objects.get(user=user)
+            return emp.full_name
+        except Employee.DoesNotExist:
+            return user.username
+
+    def user_session_data(self, user, include_active=False):
+        name = self.lay_ten_hien_thi(user)
+        data = {
+            'user_id': user.id,
+            'username': user.username,
+            'full_name': name,
+            'role': user.role,
+        }
+        if include_active:
+            data['is_active'] = user.is_active
+        return data
+
     def dang_ky(self, data):
-        # Tao tai khoan le_tan moi o trang thai chua active.
         if User.objects.filter(username=data['username']).exists():
-            return None, 'Username da ton tai'
+            return None, msg.USERNAME_EXISTS
         if User.objects.filter(email=data['email']).exists():
-            return None, 'Email da ton tai'
+            return None, msg.EMAIL_EXISTS
 
         user = User.objects.create(
             username=data['username'],
@@ -40,19 +57,19 @@ class AuthService:
         return user, None
 
     def dang_nhap(self, username, password):
-        # Tim user active va xac thuc mat khau.
         try:
             user = User.objects.get(username=username, is_active=True)
         except User.DoesNotExist:
-            return None, 'Sai username hoặc mật khẩu'
+            return None, msg.AUTH_INVALID_CREDENTIALS
         if not kiem_tra_mat_khau(user, password):
-            return None, 'Sai username hoặc mật khẩu'
+            return None, msg.AUTH_INVALID_CREDENTIALS
         return user, None
 
     def lay_ho_so(self, user):
-        # Tong hop thong tin user va employee neu user co ho so nhan vien.
+        name = user.username
         try:
             emp = Employee.objects.select_related('department').get(user=user)
+            name = emp.full_name
             emp_data = {
                 'full_name': emp.full_name,
                 'phone': emp.phone,
@@ -72,7 +89,6 @@ class AuthService:
         }
 
     def cap_nhat_ho_so(self, user, data):
-        # Cap nhat email user va thong tin employee neu ton tai.
         user.email = data.get('email', user.email)
         user.save()
         try:
@@ -85,10 +101,8 @@ class AuthService:
         return user
 
     def doi_mat_khau(self, user, mat_khau_cu, mat_khau_moi):
-        # Doi mat khau sau khi xac minh mat khau cu.
         if not kiem_tra_mat_khau(user, mat_khau_cu):
-            return False, 'Mật khẩu cũ không đúng'
+            return False, msg.AUTH_OLD_PASSWORD_WRONG
         user.password = ma_hoa_mat_khau(mat_khau_moi)
         user.save()
         return True, None
-

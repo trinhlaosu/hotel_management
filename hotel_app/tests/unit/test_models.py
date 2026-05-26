@@ -1,19 +1,14 @@
-"""
-test_models.py – Kiểm thử các Model (bảng CSDL)
-Chạy: python manage.py test hotel.tests.test_models
-"""
+"""Model tests."""
 from django.test import TestCase
-from hotel_app.models import (User, Department, Employee, Customer,
-                           RoomType, Room, Booking, Invoice,
-                           Service, BookingService)
+from hotel_app.models import (
+    User, Department, Customer, RoomType, Room, Booking,
+)
 from datetime import date
 
 
 class UserModelTest(TestCase):
-    """Kiểm thử model User"""
 
     def setUp(self):
-        """Tạo dữ liệu mẫu trước mỗi test"""
         self.user = User.objects.create(
             username='admin_test',
             password='123456',
@@ -22,19 +17,16 @@ class UserModelTest(TestCase):
         )
 
     def test_tao_user_thanh_cong(self):
-        """Tạo user với đúng thông tin"""
         self.assertEqual(self.user.username, 'admin_test')
         self.assertEqual(self.user.role, 'quan_ly')
         self.assertTrue(self.user.is_active)
 
     def test_user_str(self):
-        """__str__ trả về danh sách đúng định dạng"""
         ket_qua = str(self.user)
         self.assertIn('admin_test', ket_qua)
         self.assertIn('quan_ly', ket_qua)
 
     def test_username_unique(self):
-        """Không thể tạo 2 user cùng username"""
         from django.db import IntegrityError
         with self.assertRaises(IntegrityError):
             User.objects.create(
@@ -45,12 +37,10 @@ class UserModelTest(TestCase):
             )
 
     def test_mac_dinh_la_active(self):
-        """User mới tạo mặc định is_active=True"""
         self.assertTrue(self.user.is_active)
 
 
 class DepartmentModelTest(TestCase):
-    """Kiểm thử model Department"""
 
     def setUp(self):
         self.dept = Department.objects.create(
@@ -72,7 +62,6 @@ class DepartmentModelTest(TestCase):
 
 
 class RoomTypeModelTest(TestCase):
-    """Kiểm thử model RoomType"""
 
     def setUp(self):
         self.room_type = RoomType.objects.create(
@@ -94,7 +83,6 @@ class RoomTypeModelTest(TestCase):
 
 
 class RoomModelTest(TestCase):
-    """Kiểm thử model Room"""
 
     def setUp(self):
         self.room_type = RoomType.objects.create(
@@ -112,7 +100,6 @@ class RoomModelTest(TestCase):
         self.assertEqual(self.room.room_type.name, 'Standard')
 
     def test_mac_dinh_trang_thai_trong(self):
-        """Phòng mới tạo mặc định là trống"""
         self.assertEqual(self.room.status, 'trong')
 
     def test_room_str(self):
@@ -131,7 +118,6 @@ class RoomModelTest(TestCase):
 
 
 class CustomerModelTest(TestCase):
-    """Kiểm thử model Customer"""
 
     def setUp(self):
         self.customer = Customer.objects.create(
@@ -147,7 +133,6 @@ class CustomerModelTest(TestCase):
         self.assertEqual(self.customer.customer_type, 'regular')
 
     def test_mac_dinh_la_regular(self):
-        """Khách hàng mới mặc định là regular"""
         self.assertEqual(self.customer.customer_type, 'regular')
 
     def test_cccd_unique(self):
@@ -161,7 +146,6 @@ class CustomerModelTest(TestCase):
 
 
 class BookingModelTest(TestCase):
-    """Kiểm thử model Booking"""
 
     def setUp(self):
         self.room_type = RoomType.objects.create(
@@ -185,11 +169,9 @@ class BookingModelTest(TestCase):
         self.assertEqual(self.booking.room.room_number, '201')
 
     def test_so_dem(self):
-        """Số đêm = check_out - check_in = 3 đêm"""
         delta = self.booking.check_out - self.booking.check_in
         self.assertEqual(delta.days, 3)
 
     def test_booking_str(self):
         ket_qua = str(self.booking)
         self.assertIn('cho_xac_nhan', ket_qua)
-

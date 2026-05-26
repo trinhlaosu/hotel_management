@@ -1,90 +1,57 @@
-"""Invoice APIs."""
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+"""DRF viewsets for invoice APIs."""
+from core import messages as msg
+from core.api import ApiResponseModelViewSet, api_response
+from rest_framework.decorators import action
 
+from hotel_app.models import Invoice
+from hotel_app.permissions import SessionAuthenticated
+from hotel_app.serializers import (
+    InvoiceCreateSerializer, InvoicePaySerializer, InvoiceSerializer,
+)
 from hotel_app.services.invoice_service import InvoiceService
-from core.utils import phan_hoi, doc_json, yeu_cau_dang_nhap
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class InvoiceView(View):
-    def get(self, request, pk=None):
-        # GET /api/invoices/ va /api/invoices/<id>/ - xem danh sach/chi tiet hoa don.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
+class InvoiceViewSet(ApiResponseModelViewSet):
+    queryset = Invoice.objects.select_related('booking__customer', 'booking__room')
+    permission_classes = [SessionAuthenticated]
+    response_serializer_class = InvoiceSerializer
+    success_messages = {
+        'create': msg.INVOICE_CREATED,
+        'update': msg.INVOICE_PAID,
+    }
+    filterset_fields = ['payment_status', 'payment_method']
+    ordering_fields = ['created_at', 'total', 'paid_at']
+    ordering = ['-created_at']
 
-        svc = InvoiceService()
-        if pk:
-            data, err_msg = svc.lay_chi_tiet(pk)
-            if not data:
-                return phan_hoi(error=err_msg, status=404)
-            return phan_hoi(data=data)
-        return phan_hoi(data=svc.lay_danh_sach())
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return InvoiceCreateSerializer
+        if self.action == 'pay':
+            return InvoicePaySerializer
+        return InvoiceSerializer
 
-    def post(self, request):
-        """POST /api/invoices/."""
-        # POST /api/invoices/ - tao hoa don thu cong cho booking.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        invoice_data, err_msg = InvoiceService().tao_hoa_don_thu_cong(
-            data.get('booking_id'))
-        if not invoice_data:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(
-            data=invoice_data,
-            message='Tạo hóa đơn thành công',
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        booking = serializer.validated_data['booking']
+        invoice = InvoiceService().tao_hoa_don(booking)
+        return api_response(
+            data=InvoiceSerializer(invoice).data,
+            message=msg.INVOICE_CREATED,
             status=201,
         )
 
-
-@method_decorator(csrf_exempt, name='dispatch')
-class InvoiceByBookingView(View):
-    """GET /api/bookings/<pk>/invoice/."""
-
-    def get(self, request, pk):
-        # GET /api/bookings/<id>/invoice/ - xem hoa don gan voi booking.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-
-        data, err_msg = InvoiceService().lay_theo_booking(pk)
-        if not data:
-            return phan_hoi(error=err_msg, status=404)
-        return phan_hoi(data=data)
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class InvoicePayView(View):
-    """PUT /api/invoices/<pk>/pay/."""
-
-    def put(self, request, pk):
-        # PUT /api/invoices/<id>/pay/ - thanh toan hoa don.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
+    @action(detail=True, methods=['put'])
+    def pay(self, request, pk=None):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         invoice, err_msg = InvoiceService().thanh_toan(
-            pk, data.get('payment_method', 'tien_mat'))
-        if not invoice:
-            return phan_hoi(error=err_msg, status=400)
-
-        return phan_hoi(
-            data={
-                'invoice_id': invoice.id,
-                'total': float(invoice.total),
-                'payment_method': invoice.payment_method,
-                'paid_at': str(invoice.paid_at),
-            },
-            message='Thanh toán thành công',
+            pk,
+            serializer.validated_data.get('payment_method', 'tien_mat'),
         )
-
+        if not invoice:
+            return api_response(error=err_msg, status=400)
+        return api_response(
+            data=InvoiceSerializer(invoice).data,
+            message=msg.INVOICE_PAID,
+        )

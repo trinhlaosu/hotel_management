@@ -1,100 +1,125 @@
-"""Authentication, session, and profile APIs."""
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+"""DRF viewsets for this API group."""
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from core.utils import phan_hoi, doc_json, yeu_cau_dang_nhap
-from core.validators import kiem_tra_truong_bat_buoc
+from core import messages as msg
+from hotel_app.permissions import SessionAuthenticated
+from hotel_app.serializers import (
+    ChangePasswordSerializer, LoginSerializer, ProfileUpdateSerializer,
+    RegisterSerializer,
+)
 from hotel_app.services.auth_service import AuthService
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AuthView(View):
-    def post(self, request):
-        """POST /api/auth/register/ | login | logout."""
-        path = request.path
+class AuthViewSet(viewsets.ViewSet):
+    """ViewSet for authentication."""
+    
+    def get_permissions(self):
+        if self.action in ['profile', 'change_password']:
+            return [SessionAuthenticated()]
+        return []
+
+    @action(detail=False, methods=['post'])
+    def register(self, request):
+        """Register a new user account."""
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
         svc = AuthService()
+        user, err_msg = svc.dang_ky(serializer.validated_data)
+        if not user:
+            return Response(
+                {'error': err_msg},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response(
+            {
+                'message': msg.AUTH_REGISTER_SUCCESS,
+                'data': svc.user_session_data(user, include_active=True)
+            },
+            status=status.HTTP_201_CREATED
+        )
 
-        # POST /api/auth/register/ - tao tai khoan le tan, cho quan ly duyet.
-        if path.endswith('/register/'):
-            data, err = doc_json(request)
-            if err:
-                return err
-            ok, msg = kiem_tra_truong_bat_buoc(
-                data, ['username', 'password', 'email'])
-            if not ok:
-                return phan_hoi(error=msg, status=400)
+    @action(detail=False, methods=['post'])
+    def login(self, request):
+        """Login user."""
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        data = serializer.validated_data
+        user, err_msg = AuthService().dang_nhap(
+            data.get('username'), data.get('password')
+        )
+        if not user:
+            return Response(
+                {'error': err_msg},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        request.session['user_id'] = user.id
+        request.session['role'] = user.role
+        
+        return Response(
+            {
+                'message': msg.AUTH_LOGIN_SUCCESS,
+                'data': AuthService().user_session_data(user)
+            },
+            status=status.HTTP_200_OK
+        )
 
-            user, err_msg = svc.dang_ky(data)
-            if not user:
-                return phan_hoi(error=err_msg, status=400)
-            return phan_hoi(
-                data={
-                    'user_id': user.id,
-                    'username': user.username,
-                    'role': user.role,
-                    'is_active': user.is_active,
-                },
-                message='Dang ky thanh cong, vui long cho quan ly duyet',
-                status=201,
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
+        """Logout user."""
+        request.session.flush()
+        return Response(
+            {'message': msg.AUTH_LOGOUT_SUCCESS},
+            status=status.HTTP_200_OK
+        )
+
+    @action(detail=False, methods=['get', 'put'])
+    def profile(self, request):
+        """Get or update user profile."""
+        svc = AuthService()
+        
+        if request.method == 'GET':
+            return Response(
+                {'data': svc.lay_ho_so(request.hotel_user)},
+                status=status.HTTP_200_OK
+            )
+        
+        serializer = ProfileUpdateSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        svc.cap_nhat_ho_so(request.hotel_user, serializer.validated_data)
+        
+        return Response(
+            {'message': msg.AUTH_PROFILE_UPDATE_SUCCESS},
+            status=status.HTTP_200_OK
+        )
+
+    @action(detail=False, methods=['put'], url_path='change-password')
+    def change_password(self, request):
+        """Change user password."""
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        ok, err_msg = AuthService().doi_mat_khau(
+            request.hotel_user,
+            serializer.validated_data.get('old_password'),
+            serializer.validated_data.get('new_password'),
+        )
+        
+        if not ok:
+            return Response(
+                {'error': err_msg},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # POST /api/auth/login/ - kiem tra username/password va luu session.
-        if path.endswith('/login/'):
-            data, err = doc_json(request)
-            if err:
-                return err
-            user, err_msg = svc.dang_nhap(
-                data.get('username'), data.get('password'))
-            if not user:
-                return phan_hoi(error=err_msg, status=400)
-
-            request.session['user_id'] = user.id
-            request.session['role'] = user.role
-            return phan_hoi(
-                data={
-                    'user_id': user.id,
-                    'username': user.username,
-                    'role': user.role,
-                },
-                message='Đăng nhập thành công',
-            )
-
-        # POST /api/auth/logout/ - xoa session dang nhap hien tai.
-        if path.endswith('/logout/'):
-            request.session.flush()
-            return phan_hoi(message='Đăng xuất thành công')
-
-        return phan_hoi(error='Endpoint không tồn tại', status=404)
-
-    def get(self, request):
-        """GET /api/auth/profile/."""
-        # GET /api/auth/profile/ - tra ve thong tin user dang dang nhap.
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        return phan_hoi(data=AuthService().lay_ho_so(user))
-
-    def put(self, request):
-        """PUT /api/auth/profile/ | /api/auth/change-password/."""
-        path = request.path
-        user, err = yeu_cau_dang_nhap(request)
-        if err:
-            return err
-        data, err = doc_json(request)
-        if err:
-            return err
-
-        svc = AuthService()
-        # PUT /api/auth/change-password/ - doi mat khau sau khi xac minh mat khau cu.
-        if path.endswith('/change-password/'):
-            ok, err_msg = svc.doi_mat_khau(
-                user, data.get('old_password'), data.get('new_password'))
-            if not ok:
-                return phan_hoi(error=err_msg, status=400)
-            return phan_hoi(message='Đổi mật khẩu thành công')
-
-        # PUT /api/auth/profile/ - cap nhat email va thong tin nhan vien neu co.
-        svc.cap_nhat_ho_so(user, data)
-        return phan_hoi(message='Cập nhật hồ sơ thành công')
-
+        return Response(
+            {'message': msg.AUTH_CHANGE_PASSWORD_SUCCESS},
+            status=status.HTTP_200_OK
+        )
