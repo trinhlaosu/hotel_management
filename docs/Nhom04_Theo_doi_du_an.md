@@ -17,8 +17,8 @@ File này dùng để theo dõi kịch bản demo, trạng thái hoàn thành v�
 | Hóa đơn | Hoàn thành | Tạo hóa đơn, xem hóa đơn, thanh toán |
 | Báo cáo | Hoàn thành | Doanh thu, trạng thái phòng, thống kê booking, top dịch vụ |
 | Unit/API tests | Hoàn thành | `hotel_app/tests/unit/`: kiểm tra model, service, core utility, API, phân quyền và lỗi |
-| E2E test | Hoàn thành | `hotel_app/tests/e2e/`: kiểm tra trọn luồng đặt phòng - dịch vụ - hóa đơn - thanh toán - báo cáo |
-| Tổng test tự động | Hoàn thành | 137 tests OK |
+| E2E script DB thật | Hoàn thành | `full_api/test_e2e_api.py` chạy full API action và `booking_flow/test_e2e_booking_flow_db.py` chạy booking flow, sinh báo cáo HTML trong từng folder riêng |
+| Tổng test tự động | Hoàn thành | 136 tests OK |
 | Postman collection | Hoàn thành | `docs/hotel_management_postman_collection.json` |
 | Báo cáo Word | Cần cập nhật | Đã có tên/MSSV; cần rà phân công và bổ sung ảnh Postman thật |
 | Báo cáo PDF | Chưa có trong repo | Xuất từ Word sau khi hoàn tất |
@@ -129,7 +129,8 @@ Luồng này thể hiện trọn nghiệp vụ khách sạn từ đăng nhập �
 | Tạo slide thuyết trình | Chưa xong | Giới thiệu, CSDL, kiến trúc, chức năng, kết quả |
 | Quay video demo | Chưa xong | Quay màn hình, thấy mặt thành viên |
 | Kiểm tra lại Postman collection | Cần kiểm tra | Chạy đủ luồng trước khi quay |
-| Chạy lại test lần cuối | Xong gần nhất | 137 tests OK |
+| Chạy lại test lần cuối | Xong gần nhất | 136 tests OK |
+| Chạy E2E DB thật lần cuối | Xong gần nhất | `full_api/bao_cao_e2e_api.html` có 90 bước PASS; `booking_flow/bao_cao_e2e_booking_flow.html` PASS |
 
 ## 6. Ghi Chú Khi Quay Video
 
@@ -144,6 +145,8 @@ Luồng này thể hiện trọn nghiệp vụ khách sạn từ đăng nhập �
 ```bash
 python manage.py check
 python manage.py test
+python hotel_app/tests/e2e/full_api/test_e2e_api.py --prefix demo01
+python hotel_app/tests/e2e/booking_flow/test_e2e_booking_flow_db.py --prefix bookdemo01
 python manage.py showmigrations hotel
 python manage.py runserver 127.0.0.1:8000
 ```
@@ -152,6 +155,7 @@ Kết quả gần nhất:
 
 ```text
 python manage.py check -> OK
-python manage.py test -> 137 tests OK
+python manage.py test -> 136 tests OK
+E2E DB thật -> full_api/bao_cao_e2e_api.html 90 bước PASS; booking_flow/bao_cao_e2e_booking_flow.html PASS
 hotel migrations -> 0001, 0002, 0003 đã apply
 ```

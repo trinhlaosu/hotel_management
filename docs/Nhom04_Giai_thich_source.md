@@ -616,13 +616,7 @@ test_views_full_api.py
 test_views_invoices_reports.py
 ```
 
-E2E test:
-
-```text
-test_e2e_booking_flow.py
-```
-
-E2E test chạy trọn luồng:
+E2E script DB thật chạy trọn luồng:
 
 ```text
 login
@@ -641,8 +635,18 @@ login
 Hiện tại:
 
 ```text
-137 tests OK
+136 tests OK
 ```
+
+Ngoài test tự động, folder `hotel_app/tests/e2e/` có hai script chạy trên database thật:
+
+```text
+full_api/test_e2e_api.py
+booking_flow/test_e2e_booking_flow_db.py
+```
+
+- `full_api/test_e2e_api.py`: chạy gần full API action, map dữ liệu theo dữ liệu mẫu và sinh `full_api/bao_cao_e2e_api.html` với 90 bước kiểm tra.
+- `booking_flow/test_e2e_booking_flow_db.py`: chạy riêng luồng booking flow trên DB thật và sinh `booking_flow/bao_cao_e2e_booking_flow.html`.
 
 ## 16. Luồng Quan Trọng Nhất
 

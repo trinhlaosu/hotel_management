@@ -1026,89 +1026,95 @@ Nếu model có `is_deleted` thì soft delete, không xóa khỏi database. Nế
 File:
 
 ```text
-hotel_app/tests/e2e/test_e2e_booking_flow.py
+hotel_app/tests/e2e/full_api/test_e2e_api.py
+hotel_app/tests/e2e/booking_flow/test_e2e_booking_flow_db.py
 ```
 
+Folder `full_api/` chứa script và báo cáo full API. Folder `booking_flow/` chứa script DB thật và báo cáo HTML riêng cho luồng booking flow. Script DB thật dùng dữ liệu map theo data mẫu và sinh báo cáo HTML trong cùng folder.
+
 ```python
-class BookingFlowE2ETest(BaseTest):
+BookingFlowDbRunner(prefix=args.prefix).run()
 ```
 
-Tạo class test luồng end-to-end.
+Chạy luồng booking flow trên database thật.
 
 ```python
-def test_e2e_booking_service_invoice_payment_report_flow(self):
+self._prepare_data()
+self._run_flow()
+self._write_report()
 ```
 
-Một test kiểm tra toàn bộ luồng nghiệp vụ chính.
+Chuẩn bị dữ liệu mẫu, chạy API theo luồng nghiệp vụ và ghi báo cáo HTML.
 
 ```python
-login_res = self.login("nv_chuyen")
+self.manager = User.all_objects.update_or_create(...)
+self.receptionist = User.all_objects.update_or_create(...)
+```
+
+Tạo hoặc cập nhật tài khoản mẫu để script có thể chạy lại nhiều lần.
+
+```python
+self._api("Auth", "Dang nhap le tan", "POST", "/api/auth/login/", 200, {...})
 ```
 
 Đăng nhập bằng tài khoản lễ tân.
 
 ```python
-rooms_res = self.client.get("/api/rooms/?status=trong")
+self._api("Customers", "Tao khach hang", "POST", "/api/customers/", 201, {...})
 ```
 
-Xem phòng trống.
+Tạo khách hàng mới qua API.
 
 ```python
-customer_res = self.post("/api/customers/", {...})
-```
-
-Tạo khách hàng mới.
-
-```python
-booking_res = self.post("/api/bookings/", {...})
+self._api("Bookings", "Tao booking", "POST", "/api/bookings/", 201, {...})
 ```
 
 Tạo booking.
 
 ```python
-confirm_res = self.put(f"/api/bookings/{booking_id}/confirm/")
+self._api("Bookings", "Xac nhan booking", "PUT", f"/api/bookings/{booking_id}/confirm/", 200)
 ```
 
 Xác nhận booking.
 
 ```python
-check_in_res = self.put(f"/api/bookings/{booking_id}/check-in/")
+self._api("Bookings", "Check-in", "PUT", f"/api/bookings/{booking_id}/check-in/", 200)
 ```
 
 Check-in.
 
 ```python
-service_res = self.post(f"/api/bookings/{booking_id}/services/", {...})
+self._api("Booking services", "Them dich vu", "POST", f"/api/bookings/{booking_id}/services/", 201, {...})
 ```
 
 Thêm dịch vụ vào booking.
 
 ```python
-invoice = Invoice.objects.get(booking_id=booking_id)
+self._db("Invoices", "Kiem tra hoa don", Invoice.objects.filter(booking_id=booking_id).exists(), ...)
 ```
 
 Kiểm tra hóa đơn trong database đã cập nhật.
 
 ```python
-check_out_res = self.put(f"/api/bookings/{booking_id}/check-out/")
+self._api("Bookings", "Check-out", "PUT", f"/api/bookings/{booking_id}/check-out/", 200)
 ```
 
 Check-out.
 
 ```python
-pay_res = self.put(f"/api/invoices/{invoice_id}/pay/", {...})
+self._api("Invoices", "Thanh toan", "PUT", f"/api/invoices/{invoice_id}/pay/", 200, {...})
 ```
 
 Thanh toán hóa đơn.
 
 ```python
-admin_login_res = self.login("admin_mychi")
+self._api("Auth", "Dang nhap quan ly", "POST", "/api/auth/login/", 200, {...})
 ```
 
 Đăng nhập quản lý để xem báo cáo.
 
 ```python
-revenue_res = self.client.get("/api/reports/revenue/")
+self._api("Reports", "Bao cao doanh thu", "GET", "/api/reports/revenue/", 200)
 ```
 
 Kiểm tra báo cáo doanh thu.

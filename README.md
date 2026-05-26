@@ -33,7 +33,7 @@ Hệ thống hỗ trợ các nghiệp vụ chính của khách sạn:
 | Database | MySQL |
 | Filter/Search | django-filter |
 | Kiến trúc | Django MVT kết hợp service layer |
-| Kiểm thử | Unit/API test, E2E test, Postman |
+| Kiểm thử | Unit/API test, E2E test, E2E script trên DB thật, Postman |
 
 ## 3. Điểm Chính Của Dự Án
 
@@ -47,7 +47,7 @@ Hệ thống hỗ trợ các nghiệp vụ chính của khách sạn:
 - Mật khẩu được mã hóa bằng Django password hasher, không lưu plain text.
 - Có soft delete hoặc vô hiệu hóa dữ liệu quan trọng để giữ lịch sử hệ thống.
 - Có API báo cáo doanh thu, trạng thái phòng, thống kê booking và top dịch vụ.
-- Kiểm thử được tách thành Unit/API test cho từng thành phần và E2E test cho luồng nghiệp vụ hoàn chỉnh; tổng cộng 137 test chạy thành công.
+- Kiểm thử được tách thành Unit/API test và E2E script chạy trên database thật; 136 test tự động chạy thành công, report E2E API có 90 bước PASS.
 - Có Postman collection để kiểm thử thủ công và demo API.
 - Các thành phần chính được triển khai theo hướng đối tượng qua model, serializer, viewset và service class.
 
@@ -176,7 +176,7 @@ Nhóm test tự động được chia thành hai phần:
 | Nhóm test | Mục tiêu |
 |---|---|
 | Unit/API test | Nằm trong `hotel_app/tests/unit/`, kiểm tra model, service, core utility, serializer/view API, phân quyền, soft delete và các luồng lỗi quan trọng |
-| E2E test | Nằm trong `hotel_app/tests/e2e/`, kiểm tra trọn luồng login -> đặt phòng -> check-in -> sử dụng dịch vụ -> check-out -> thanh toán -> báo cáo |
+| E2E script trên DB thật | `e2e/full_api/test_e2e_api.py` chạy gần full API action và `e2e/booking_flow/test_e2e_booking_flow_db.py` chạy riêng booking flow, sau đó sinh file HTML báo cáo |
 
 Chạy toàn bộ test:
 
@@ -187,8 +187,8 @@ python manage.py test
 Kết quả kiểm tra hiện tại:
 
 ```text
-Found 137 test(s)
-Ran 137 tests
+Found 136 test(s)
+Ran 136 tests
 OK
 ```
 
@@ -198,8 +198,26 @@ Postman collection:
 docs/hotel_management_postman_collection.json
 ```
 
+Chạy E2E script trên database thật và sinh báo cáo HTML:
+
+```bash
+python hotel_app/tests/e2e/full_api/test_e2e_api.py --prefix demo01
+python hotel_app/tests/e2e/booking_flow/test_e2e_booking_flow_db.py --prefix bookdemo01
+```
+
+File báo cáo sau khi chạy:
+
+```text
+hotel_app/tests/e2e/full_api/bao_cao_e2e_api.html
+hotel_app/tests/e2e/booking_flow/bao_cao_e2e_booking_flow.html
+```
+
 ## 10. Tài Liệu Liên Quan
 
 - Postman collection: `docs/hotel_management_postman_collection.json`
 - Script tạo database/bảng: `scripts/script_create_db_hotel_management.sql`
 - Script thêm dữ liệu mẫu: `scripts/script_insert_data_hotel_management.sql`
+- E2E full API script: `hotel_app/tests/e2e/full_api/test_e2e_api.py`
+- E2E booking flow script: `hotel_app/tests/e2e/booking_flow/test_e2e_booking_flow_db.py`
+- Báo cáo E2E full API: `hotel_app/tests/e2e/full_api/bao_cao_e2e_api.html`
+- Báo cáo E2E booking flow: `hotel_app/tests/e2e/booking_flow/bao_cao_e2e_booking_flow.html`

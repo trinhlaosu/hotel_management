@@ -45,7 +45,7 @@ Mục tiêu của đồ án là xây dựng một backend API có thể phục v
 | API | Django Rest Framework | Serializer, ViewSet, Router, Response, Permission |
 | Cơ sở dữ liệu | MySQL | Lưu trữ dữ liệu nghiệp vụ |
 | Lọc dữ liệu | django-filter | Hỗ trợ filter/search/order trong API |
-| Kiểm thử | Unit/API test, E2E test, Postman | Kiểm tra tự động và kiểm thử luồng API |
+| Kiểm thử | Unit/API test, E2E test, E2E script DB thật, Postman | Kiểm tra tự động, kiểm thử luồng API và sinh báo cáo HTML |
 
 Django Rest Framework được chọn vì phù hợp với yêu cầu REST API: serializer giúp kiểm tra và chuyển đổi dữ liệu, ViewSet giúp tổ chức các API theo tài nguyên, router giúp sinh URL rõ ràng, permission giúp kiểm soát quyền truy cập. Service layer được bổ sung để tách nghiệp vụ khỏi view, giúp code dễ đọc và dễ kiểm thử hơn.
 
@@ -159,7 +159,7 @@ Hệ thống có các API báo cáo doanh thu, trạng thái phòng, thống kê
 | Invoice | `/api/invoices/`, `/api/invoices/<id>/pay/` | Lập và thanh toán hóa đơn |
 | Report | `/api/reports/revenue/`, `/room-status/`, `/booking-statistics/`, `/top-services/` | Báo cáo và thống kê |
 
-Tổng số API theo method và endpoint là 64 thao tác, gồm GET, POST, PUT và DELETE. Các endpoint được tổ chức theo tài nguyên nên dễ kiểm thử bằng Postman và dễ mở rộng khi cần xây dựng frontend ở giai đoạn sau.
+Tổng số API theo method và endpoint là khoảng 76 thao tác chính, gồm GET, POST, PUT, PATCH và DELETE. Các endpoint được tổ chức theo tài nguyên nên dễ kiểm thử bằng Postman và dễ mở rộng khi cần xây dựng frontend ở giai đoạn sau.
 
 ---
 
@@ -180,14 +180,14 @@ Luồng đặt phòng và thanh toán là chức năng tiêu biểu nhất của
 
 ## 9. Kiểm thử
 
-Dự án được kiểm thử theo hai hướng: kiểm thử tự động và kiểm thử API bằng Postman. Kiểm thử tự động được chia thành Unit/API test trong `hotel_app/tests/unit/` và E2E test trong `hotel_app/tests/e2e/`. Unit/API test kiểm tra model, service, core utility, view/API, phân quyền, soft delete, validate dữ liệu ngày, cập nhật hóa đơn sau khi sửa/xóa dịch vụ trong booking và các nhánh lỗi quan trọng. E2E test kiểm tra trọn luồng nghiệp vụ từ đăng nhập, tạo khách hàng, đặt phòng, check-in, ghi nhận dịch vụ, check-out, xem hóa đơn, thanh toán đến xem báo cáo doanh thu. Postman collection dùng để minh họa và demo luồng API chính.
+Dự án được kiểm thử theo ba hướng: kiểm thử tự động, E2E script chạy trên database thật và kiểm thử API bằng Postman. Kiểm thử tự động nằm trong `hotel_app/tests/unit/`, kiểm tra model, service, core utility, view/API, phân quyền, soft delete, validate dữ liệu ngày, cập nhật hóa đơn sau khi sửa/xóa dịch vụ trong booking và các nhánh lỗi quan trọng. Ngoài ra, hai script E2E chạy trên database thật giúp kiểm tra API theo dữ liệu mẫu, kiểm tra luồng nghiệp vụ từ đăng nhập, tạo khách hàng, đặt phòng, check-in, ghi nhận dịch vụ, check-out, xem hóa đơn, thanh toán đến xem báo cáo doanh thu và sinh báo cáo HTML để xem từng bước PASS/FAIL. Postman collection dùng để minh họa và demo luồng API chính.
 
 | Loại kiểm thử | Kết quả |
 |---|---|
 | Django system check | Không phát hiện lỗi cấu hình |
 | Unit/API test | Kiểm tra các thành phần riêng lẻ và API |
-| E2E test | Kiểm tra luồng nghiệp vụ hoàn chỉnh |
-| Tổng test tự động | 137 tests chạy thành công |
+| E2E script DB thật | `e2e/full_api/test_e2e_api.py` sinh `full_api/bao_cao_e2e_api.html` với 90 bước; `e2e/booking_flow/test_e2e_booking_flow_db.py` sinh `booking_flow/bao_cao_e2e_booking_flow.html` |
+| Tổng test tự động | 136 tests chạy thành công |
 | Postman | Có collection trong `docs/hotel_management_postman_collection.json` |
 | Luồng nghiệp vụ | Đăng nhập - đặt phòng - check-in - dịch vụ - check-out - hóa đơn - thanh toán - báo cáo |
 
@@ -232,9 +232,9 @@ Chức năng nhóm đánh giá nổi bật nhất là luồng đặt phòng vì 
 | Cơ sở dữ liệu | MySQL, 10 bảng chính |
 | Đối tượng người dùng | Quản lý, lễ tân, khách chưa đăng nhập |
 | Tài khoản mẫu | `ql001/MyChi@123`, `lt001/Chuyen@123`, `lt002/DucMinh@123` |
-| Số lượng API | 64 thao tác API theo method + endpoint |
+| Số lượng API | Khoảng 76 thao tác API chính theo method + endpoint |
 | Chức năng yêu thích | Luồng đặt phòng, check-in/check-out, hóa đơn và thanh toán |
-| Kiểm thử | Unit/API test và E2E test 137 tests thành công; có Postman collection |
+| Kiểm thử | Unit/API test 136 tests thành công; E2E script DB thật có báo cáo HTML; có Postman collection |
 | Tệp Postman | `docs/hotel_management_postman_collection.json` |
 
 ---
