@@ -41,6 +41,8 @@ EMPLOYEE_UPDATED = "Cập nhật nhân viên thành công"
 EMPLOYEE_DISABLED = "Đã vô hiệu hóa nhân viên"
 EMPLOYEE_NOT_FOUND = "Không tìm thấy nhân viên"
 
+PRICING_CALCULATED = "Tính giá booking thành công"
+
 INVOICE_CREATED = "Tạo hóa đơn thành công"
 INVOICE_PAID = "Thanh toán thành công"
 INVOICE_NOT_FOUND = "Không tìm thấy hóa đơn"

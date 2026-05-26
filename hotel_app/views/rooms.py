@@ -58,14 +58,11 @@ class RoomViewSet(ApiResponseModelViewSet):
         return [SessionAuthenticated()]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        capacity = self.request.query_params.get('capacity')
-        room_type_id = self.request.query_params.get('room_type_id')
-        if capacity:
-            queryset = queryset.filter(room_type__capacity__gte=capacity)
-        if room_type_id:
-            queryset = queryset.filter(room_type_id=room_type_id)
-        return queryset
+        return RoomService().loc_queryset(
+            super().get_queryset(),
+            capacity=self.request.query_params.get('capacity'),
+            room_type_id=self.request.query_params.get('room_type_id'),
+        )
 
     def get_serializer_class(self):
         if self.action == 'create':

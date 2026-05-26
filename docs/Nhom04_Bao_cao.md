@@ -18,7 +18,7 @@
 
 ## 1. Giới thiệu
 
-Đề tài xây dựng RESTful API quản lý khách sạn bằng Django Rest Framework nhằm hỗ trợ các nghiệp vụ cơ bản của một khách sạn: quản lý tài khoản, nhân viên, khách hàng, phòng, đặt phòng, sử dụng dịch vụ, lập hóa đơn, thanh toán và thống kê. Sản phẩm tập trung vào phần backend API đúng định hướng đồ án Web API/Backend API Server, không xây dựng giao diện frontend riêng. Việc kiểm thử và minh họa chức năng được thực hiện bằng Postman và bộ test tự động của Django.
+Đề tài xây dựng RESTful API quản lý khách sạn bằng Django Rest Framework nhằm hỗ trợ các nghiệp vụ cơ bản của một khách sạn: quản lý tài khoản, nhân viên, khách hàng, phòng, đặt phòng, sử dụng dịch vụ, lập hóa đơn, thanh toán và thống kê. Ngoài app chính `hotel_app`, project có thêm module nâng cao `pricing` để tính giá booking dự kiến từ dữ liệu Room và RoomType. Sản phẩm tập trung vào phần backend API đúng định hướng đồ án Web API/Backend API Server, không xây dựng giao diện frontend riêng. Việc kiểm thử và minh họa chức năng được thực hiện bằng Postman và bộ test tự động của Django.
 
 Hệ thống được xây dựng bằng Python, Django, Django Rest Framework và MySQL theo kiến trúc Django MVT kết hợp service layer. Nhóm tự phân tích yêu cầu, thiết kế cơ sở dữ liệu và triển khai mã nguồn dựa trên yêu cầu đồ án; không sao chép nguyên mẫu từ Internet. Các tài liệu tham khảo chính là tài liệu chính thức của Django, Django Rest Framework và hướng dẫn môn học. Kết quả đạt được là một hệ thống API có phân quyền, có luồng đặt phòng hoàn chỉnh, có hóa đơn tự động và có kiểm thử cho các chức năng chính.
 
@@ -32,6 +32,7 @@ Mục tiêu của đồ án là xây dựng một backend API có thể phục v
 - Quản lý dữ liệu nền: tài khoản, phòng ban, nhân viên, khách hàng, loại phòng, phòng và dịch vụ.
 - Xử lý nghiệp vụ: tạo booking, xác nhận, hủy, check-in, check-out, ghi nhận dịch vụ, lập và thanh toán hóa đơn.
 - Cung cấp API báo cáo doanh thu, trạng thái phòng, thống kê đặt phòng và dịch vụ được dùng nhiều.
+- Cung cấp API nâng cao tính giá booking dự kiến bằng module `pricing`, thể hiện project có nhiều app/module và app chính gọi sang module tính toán riêng.
 - Kiểm thử bằng Unit/API test, E2E test và Postman collection.
 
 ---
@@ -45,9 +46,10 @@ Mục tiêu của đồ án là xây dựng một backend API có thể phục v
 | API | Django Rest Framework | Serializer, ViewSet, Router, Response, Permission |
 | Cơ sở dữ liệu | MySQL | Lưu trữ dữ liệu nghiệp vụ |
 | Lọc dữ liệu | django-filter | Hỗ trợ filter/search/order trong API |
+| Module nâng cao | pricing app | Tính giá booking từ dữ liệu Room/RoomType |
 | Kiểm thử | Unit/API test, E2E test, E2E script DB thật, Postman | Kiểm tra tự động, kiểm thử luồng API và sinh báo cáo HTML |
 
-Django Rest Framework được chọn vì phù hợp với yêu cầu REST API: serializer giúp kiểm tra và chuyển đổi dữ liệu, ViewSet giúp tổ chức các API theo tài nguyên, router giúp sinh URL rõ ràng, permission giúp kiểm soát quyền truy cập. Service layer được bổ sung để tách nghiệp vụ khỏi view, giúp code dễ đọc và dễ kiểm thử hơn.
+Django Rest Framework được chọn vì phù hợp với yêu cầu REST API: serializer giúp kiểm tra và chuyển đổi dữ liệu, ViewSet giúp tổ chức các API theo tài nguyên, router giúp sinh URL rõ ràng, permission giúp kiểm soát quyền truy cập. Các view được viết dưới dạng class-based ViewSet; nghiệp vụ quan trọng như đặt phòng, cập nhật trạng thái phòng, hóa đơn, báo cáo và tính giá booking được gọi sang module service riêng thay vì xử lý trực tiếp trong view. Service layer được bổ sung để tách nghiệp vụ khỏi view, giúp code dễ đọc và dễ kiểm thử hơn.
 
 ---
 
@@ -89,8 +91,9 @@ Hệ thống được tổ chức theo kiến trúc Django MVT, đồng thời �
 |---|---|---|
 | Model | `hotel_app/models.py` | Định nghĩa bảng, quan hệ, ràng buộc và manager |
 | Serializer | `hotel_app/serializers/` | Validate dữ liệu request và chuyển model thành JSON |
-| ViewSet | `hotel_app/views/` | Nhận request, chọn serializer, gọi service và trả response |
+| ViewSet | `hotel_app/views/` | Class-based ViewSet, nhận request, chọn serializer, gọi service và trả response |
 | Service | `hotel_app/services/` | Xử lý nghiệp vụ như booking, invoice, room status, report |
+| Module nâng cao | `pricing/` | App riêng tính giá booking dự kiến, được gọi qua API `/api/pricing/` |
 | Core | `core/api.py`, `core/messages.py` | Chuẩn hóa response và thông báo |
 | Router | `hotel_app/urls.py` | Đăng ký endpoint API |
 
@@ -149,6 +152,7 @@ Hệ thống có các API báo cáo doanh thu, trạng thái phòng, thống kê
 | User | `/api/users/` | Quản lý tài khoản |
 | Department | `/api/departments/` | Quản lý phòng ban |
 | Employee | `/api/employees/` | Quản lý nhân viên |
+| Pricing | `/api/pricing/calculate-booking-price/` | API nâng cao tính giá booking dự kiến bằng module riêng |
 | Customer | `/api/customers/` | Quản lý khách hàng |
 | RoomType | `/api/room-types/` | Quản lý loại phòng |
 | Room | `/api/rooms/` | Quản lý phòng và trạng thái phòng |
@@ -159,7 +163,7 @@ Hệ thống có các API báo cáo doanh thu, trạng thái phòng, thống kê
 | Invoice | `/api/invoices/`, `/api/invoices/<id>/pay/` | Lập và thanh toán hóa đơn |
 | Report | `/api/reports/revenue/`, `/room-status/`, `/booking-statistics/`, `/top-services/` | Báo cáo và thống kê |
 
-Tổng số API theo method và endpoint là khoảng 76 thao tác chính, gồm GET, POST, PUT, PATCH và DELETE. Các endpoint được tổ chức theo tài nguyên nên dễ kiểm thử bằng Postman và dễ mở rộng khi cần xây dựng frontend ở giai đoạn sau.
+Tổng số API theo method và endpoint là khoảng 77 thao tác chính, gồm GET, POST, PUT, PATCH và DELETE. Các endpoint được tổ chức theo tài nguyên nên dễ kiểm thử bằng Postman và dễ mở rộng khi cần xây dựng frontend ở giai đoạn sau.
 
 ---
 
@@ -186,8 +190,8 @@ Dự án được kiểm thử theo ba hướng: kiểm thử tự động, E2E 
 |---|---|
 | Django system check | Không phát hiện lỗi cấu hình |
 | Unit/API test | Kiểm tra các thành phần riêng lẻ và API |
-| E2E script DB thật | `e2e/full_api/test_e2e_api.py` sinh `full_api/bao_cao_e2e_api.html` với 90 bước; `e2e/booking_flow/test_e2e_booking_flow_db.py` sinh `booking_flow/bao_cao_e2e_booking_flow.html` |
-| Tổng test tự động | 136 tests chạy thành công |
+| E2E script DB thật | `e2e/full_api/test_e2e_api.py` sinh `full_api/bao_cao_e2e_api.html` với 91 bước; `e2e/booking_flow/test_e2e_booking_flow_db.py` sinh `booking_flow/bao_cao_e2e_booking_flow.html` |
+| Tổng test tự động | 140 tests chạy thành công |
 | Postman | Có collection trong `docs/hotel_management_postman_collection.json` |
 | Luồng nghiệp vụ | Đăng nhập - đặt phòng - check-in - dịch vụ - check-out - hóa đơn - thanh toán - báo cáo |
 
@@ -197,7 +201,7 @@ Các ảnh chụp kết quả test API bằng Postman được đưa vào phụ 
 
 ## 10. Kết luận
 
-Đồ án đã xây dựng được RESTful API quản lý khách sạn bằng Python, Django Rest Framework và MySQL. Hệ thống có cơ sở dữ liệu 10 bảng, có phân quyền người dùng, có các API CRUD, có nghiệp vụ đặt phòng - hóa đơn - thanh toán và có báo cáo thống kê. Code được tổ chức theo kiến trúc Django MVT kết hợp service layer để dễ đọc, dễ kiểm thử và phù hợp hơn với cách dùng DRF trong thực tế.
+Đồ án đã xây dựng được RESTful API quản lý khách sạn bằng Python, Django Rest Framework và MySQL. Hệ thống có cơ sở dữ liệu 10 bảng, có phân quyền người dùng, có các API CRUD, có nghiệp vụ đặt phòng - hóa đơn - thanh toán, có báo cáo thống kê và có module nâng cao `pricing` để tính giá booking dự kiến. Code được tổ chức theo kiến trúc Django MVT kết hợp service layer để dễ đọc, dễ kiểm thử và phù hợp hơn với cách dùng DRF trong thực tế.
 
 Chức năng nhóm đánh giá nổi bật nhất là luồng đặt phòng vì nó thể hiện rõ nghiệp vụ khách sạn: kiểm tra phòng trống, quản lý trạng thái booking, cập nhật trạng thái phòng, ghi nhận dịch vụ và tính hóa đơn. Qua đồ án, nhóm hiểu rõ hơn cách xây dựng backend API, cách tách trách nhiệm giữa model, serializer, view và service, cũng như cách kiểm thử API trước khi bàn giao sản phẩm.
 
@@ -232,9 +236,9 @@ Chức năng nhóm đánh giá nổi bật nhất là luồng đặt phòng vì 
 | Cơ sở dữ liệu | MySQL, 10 bảng chính |
 | Đối tượng người dùng | Quản lý, lễ tân, khách chưa đăng nhập |
 | Tài khoản mẫu | `ql001/MyChi@123`, `lt001/Chuyen@123`, `lt002/DucMinh@123` |
-| Số lượng API | Khoảng 76 thao tác API chính theo method + endpoint |
+| Số lượng API | Khoảng 77 thao tác API chính theo method + endpoint |
 | Chức năng yêu thích | Luồng đặt phòng, check-in/check-out, hóa đơn và thanh toán |
-| Kiểm thử | Unit/API test 136 tests thành công; E2E script DB thật có báo cáo HTML; có Postman collection |
+| Kiểm thử | Unit/API test 140 tests thành công; E2E script DB thật có báo cáo HTML; có Postman collection |
 | Tệp Postman | `docs/hotel_management_postman_collection.json` |
 
 ---

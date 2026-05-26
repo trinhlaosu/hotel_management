@@ -1,7 +1,26 @@
 """Report business logic."""
+from datetime import date
+
+from core import messages as msg
 
 
 class ReportService:
+    def lay_khoang_ngay(self, tu_ngay=None, den_ngay=None):
+        try:
+            tu_ngay_value = date.fromisoformat(tu_ngay) if tu_ngay else None
+            den_ngay_value = date.fromisoformat(den_ngay) if den_ngay else None
+        except ValueError:
+            return None, None, msg.DATE_FORMAT_INVALID
+        return tu_ngay_value, den_ngay_value, None
+
+    def lay_top(self, top_value=None):
+        try:
+            top = int(top_value or 5)
+        except (TypeError, ValueError):
+            return None, 'top phải là số nguyên'
+        if top <= 0:
+            return None, 'top phải lớn hơn 0'
+        return top, None
 
     def thong_ke_doanh_thu(self, tu_ngay=None, den_ngay=None):
         from hotel_app.models import Invoice

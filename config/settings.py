@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'hotel_app.apps.HotelConfig',
+    'pricing.apps.PricingConfig',
 ]
 
 MIDDLEWARE = [

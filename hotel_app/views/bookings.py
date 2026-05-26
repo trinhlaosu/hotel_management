@@ -1,5 +1,4 @@
 """DRF viewsets for this API group."""
-from datetime import date
 
 from core import messages as msg
 from core.api import api_response, serializer_error_response
@@ -68,23 +67,15 @@ class BookingViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
-        customer_id = request.query_params.get('customer_id')
-        room_id = request.query_params.get('room_id')
-        tu_ngay = request.query_params.get('tu_ngay')
-        den_ngay = request.query_params.get('den_ngay')
-        try:
-            tu_ngay_value = date.fromisoformat(tu_ngay) if tu_ngay else None
-            den_ngay_value = date.fromisoformat(den_ngay) if den_ngay else None
-        except ValueError:
-            return api_response(error=msg.DATE_FORMAT_INVALID, status=400)
-        if customer_id:
-            queryset = queryset.filter(customer_id=customer_id)
-        if room_id:
-            queryset = queryset.filter(room_id=room_id)
-        if tu_ngay_value:
-            queryset = queryset.filter(check_in__gte=tu_ngay_value)
-        if den_ngay_value:
-            queryset = queryset.filter(check_out__lte=den_ngay_value)
+        queryset, err_msg = self.get_booking_service().loc_queryset(
+            queryset,
+            customer_id=request.query_params.get('customer_id'),
+            room_id=request.query_params.get('room_id'),
+            tu_ngay=request.query_params.get('tu_ngay'),
+            den_ngay=request.query_params.get('den_ngay'),
+        )
+        if err_msg:
+            return api_response(error=err_msg, status=400)
         page = self.paginate_queryset(queryset)
         if page is not None:
             return api_response(

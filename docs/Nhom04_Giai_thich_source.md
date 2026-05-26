@@ -81,8 +81,9 @@ Vai trò từng lớp:
 |---|---|
 | `models.py` | Định nghĩa bảng database và quan hệ |
 | `serializers/` | Validate input và format output |
-| `views/` | Nhận request, gọi serializer/service, trả response |
-| `services/` | Xử lý nghiệp vụ chính |
+| `views/` | Class-based ViewSet, nhận request, gọi serializer/service, trả response |
+| `services/` | Xử lý nghiệp vụ chính; view gọi sang module này thay vì tự xử lý logic quan trọng |
+| `pricing/` | App/module nâng cao, tính giá booking dự kiến từ dữ liệu Room/RoomType |
 | `core/` | Response, message, exception, field dùng chung |
 
 ## 3. Chức Năng Auth
@@ -552,7 +553,38 @@ booking-statistics   thống kê booking theo trạng thái
 top-services         dịch vụ được dùng nhiều nhất
 ```
 
-## 14. Core Dùng Chung
+## 14. Module Pricing Nâng Cao
+
+File chính:
+
+```text
+pricing/urls.py
+pricing/views.py
+pricing/serializers.py
+pricing/services.py
+pricing/tests.py
+docs/Nhom04_Giai_thich_app_pricing.md
+```
+
+API:
+
+```text
+POST /api/pricing/calculate-booking-price/
+```
+
+Ý nghĩa:
+
+```text
+hotel_app quản lý Room và RoomType
+-> pricing nhận room_id, check_in, check_out, customer_type
+-> BookingPriceCalculator đọc Room/RoomType từ hotel_app.models
+-> tính số đêm, giá phòng, phụ thu cuối tuần, giảm giá VIP
+-> trả JSON kết quả tính giá booking dự kiến
+```
+
+Đây là phần API nâng cao thể hiện trong một Django project có nhiều app/module. App chính `hotel_app` giữ dữ liệu phòng, còn app `pricing` xử lý thuật toán tính giá booking riêng.
+
+## 15. Core Dùng Chung
 
 File chính:
 
@@ -594,7 +626,7 @@ ApiResponseModelViewSet
 
 `core/fields.py` chứa `NotFoundPrimaryKeyRelatedField`, giúp ID không tồn tại trả lỗi 404 thay vì validation thường.
 
-## 15. Tests
+## 16. Tests
 
 Tests được chia thành hai nhóm:
 
@@ -635,7 +667,7 @@ login
 Hiện tại:
 
 ```text
-136 tests OK
+140 tests OK
 ```
 
 Ngoài test tự động, folder `hotel_app/tests/e2e/` có hai script chạy trên database thật:
@@ -645,10 +677,10 @@ full_api/test_e2e_api.py
 booking_flow/test_e2e_booking_flow_db.py
 ```
 
-- `full_api/test_e2e_api.py`: chạy gần full API action, map dữ liệu theo dữ liệu mẫu và sinh `full_api/bao_cao_e2e_api.html` với 90 bước kiểm tra.
+- `full_api/test_e2e_api.py`: chạy gần full API action, map dữ liệu theo dữ liệu mẫu và sinh `full_api/bao_cao_e2e_api.html` với 91 bước kiểm tra.
 - `booking_flow/test_e2e_booking_flow_db.py`: chạy riêng luồng booking flow trên DB thật và sinh `booking_flow/bao_cao_e2e_booking_flow.html`.
 
-## 16. Luồng Quan Trọng Nhất
+## 17. Luồng Quan Trọng Nhất
 
 Nếu cần trình bày ngắn gọn chức năng chính của hệ thống:
 

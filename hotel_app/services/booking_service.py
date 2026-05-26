@@ -45,6 +45,24 @@ class BookingService:
             qs = qs.filter(check_out__lte=den_ngay)
         return qs
 
+    def loc_queryset(self, queryset, customer_id=None, room_id=None,
+                     tu_ngay=None, den_ngay=None):
+        try:
+            tu_ngay_value = date.fromisoformat(tu_ngay) if tu_ngay else None
+            den_ngay_value = date.fromisoformat(den_ngay) if den_ngay else None
+        except ValueError:
+            return None, msg.DATE_FORMAT_INVALID
+
+        if customer_id:
+            queryset = queryset.filter(customer_id=customer_id)
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+        if tu_ngay_value:
+            queryset = queryset.filter(check_in__gte=tu_ngay_value)
+        if den_ngay_value:
+            queryset = queryset.filter(check_out__lte=den_ngay_value)
+        return queryset, None
+
     def cap_nhat_ghi_chu(self, booking_id, note):
         try:
             booking = Booking.objects.get(id=booking_id)

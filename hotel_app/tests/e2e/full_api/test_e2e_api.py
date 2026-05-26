@@ -236,7 +236,6 @@ class RealDbApiReporter:
         self._api("Employees", "Patch nhan vien", "PATCH", f"/api/employees/{emp_id}/", 200, {
             "shift": "toi",
         }, "PATCH Employee.shift")
-
         customer_id = self._data_id(self._api(
             "Customers", "Them khach hang", "POST", "/api/customers/", 201, {
                 "full_name": f"Nguyen Tat Hung E2E {prefix}",
@@ -259,6 +258,21 @@ class RealDbApiReporter:
         self._api("Customers", "Patch khach hang", "PATCH", f"/api/customers/{customer_id}/", 200, {
             "customer_type": "vip",
         }, "PATCH Customer.customer_type")
+
+        self._api(
+            "Pricing",
+            "Tinh gia booking du kien",
+            "POST",
+            "/api/pricing/calculate-booking-price/",
+            200,
+            {
+                "room_id": 16,
+                "check_in": "2028-08-10",
+                "check_out": "2028-08-13",
+                "customer_type": "vip",
+            },
+            "API nang cao: hotel_app Room/RoomType goi module pricing de tinh gia",
+        )
 
         room_type_id = self._data_id(self._api(
             "Room types", "Them loai phong", "POST", "/api/room-types/", 201, {

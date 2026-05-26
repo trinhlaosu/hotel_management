@@ -34,6 +34,13 @@ class RoomService:
             'bao_tri':  tat_ca.filter(status='bao_tri').count(),
         }
 
+    def loc_queryset(self, queryset, capacity=None, room_type_id=None):
+        if capacity:
+            queryset = queryset.filter(room_type__capacity__gte=capacity)
+        if room_type_id:
+            queryset = queryset.filter(room_type_id=room_type_id)
+        return queryset
+
     @property
     def ten_service(self):
         return 'RoomService'

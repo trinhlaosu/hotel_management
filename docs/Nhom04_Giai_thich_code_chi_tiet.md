@@ -1140,6 +1140,16 @@ View chỉ nhận request và trả response.
 Các xử lý như tạo booking, cập nhật phòng, tính hóa đơn, thanh toán được đặt trong service để code dễ đọc và dễ test hơn.
 ```
 
+Nếu thầy hỏi “project có nhiều app/module không?”, trả lời:
+
+```text
+Project có app chính hotel_app và module nâng cao pricing.
+hotel_app quản lý dữ liệu phòng trong bảng Room và RoomType.
+pricing là module riêng có urls.py, views.py, serializers.py, services.py.
+API /api/pricing/calculate-booking-price/ nhận room_id, check_in, check_out, customer_type rồi gọi BookingPriceCalculator để tính giá booking dự kiến.
+Điều này giống mô hình app chính gọi sang module tính toán riêng.
+```
+
 Nếu thầy hỏi “vì sao có serializer?”, trả lời:
 
 ```text

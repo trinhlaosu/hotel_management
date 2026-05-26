@@ -7,6 +7,7 @@ File này dùng để theo dõi kịch bản demo, trạng thái hoàn thành v�
 | Hạng mục | Trạng thái | Ghi chú |
 |---|---|---|
 | Source code backend API | Hoàn thành | Django REST Framework, MySQL |
+| Module pricing nâng cao | Hoàn thành | App riêng `pricing`, API tính giá booking dự kiến từ dữ liệu Room/RoomType |
 | Database | Hoàn thành | 10 bảng nghiệp vụ chính |
 | Migration | Hoàn thành | `hotel.0001`, `0002`, `0003` đã apply |
 | Authentication | Hoàn thành | Đăng ký, đăng nhập, đăng xuất, profile, đổi mật khẩu |
@@ -18,8 +19,9 @@ File này dùng để theo dõi kịch bản demo, trạng thái hoàn thành v�
 | Báo cáo | Hoàn thành | Doanh thu, trạng thái phòng, thống kê booking, top dịch vụ |
 | Unit/API tests | Hoàn thành | `hotel_app/tests/unit/`: kiểm tra model, service, core utility, API, phân quyền và lỗi |
 | E2E script DB thật | Hoàn thành | `full_api/test_e2e_api.py` chạy full API action và `booking_flow/test_e2e_booking_flow_db.py` chạy booking flow, sinh báo cáo HTML trong từng folder riêng |
-| Tổng test tự động | Hoàn thành | 136 tests OK |
+| Tổng test tự động | Hoàn thành | 140 tests OK |
 | Postman collection | Hoàn thành | `docs/hotel_management_postman_collection.json` |
+| Kịch bản demo full API | Hoàn thành | `docs/Nhom04_Kich_ban_demo_full_api.md`, đi qua hầu hết nhóm API chính |
 | Báo cáo Word | Cần cập nhật | Đã có tên/MSSV; cần rà phân công và bổ sung ảnh Postman thật |
 | Báo cáo PDF | Chưa có trong repo | Xuất từ Word sau khi hoàn tất |
 | Slide thuyết trình | Chưa có trong repo | Cần tạo file `.pptx` |
@@ -129,8 +131,8 @@ Luồng này thể hiện trọn nghiệp vụ khách sạn từ đăng nhập �
 | Tạo slide thuyết trình | Chưa xong | Giới thiệu, CSDL, kiến trúc, chức năng, kết quả |
 | Quay video demo | Chưa xong | Quay màn hình, thấy mặt thành viên |
 | Kiểm tra lại Postman collection | Cần kiểm tra | Chạy đủ luồng trước khi quay |
-| Chạy lại test lần cuối | Xong gần nhất | 136 tests OK |
-| Chạy E2E DB thật lần cuối | Xong gần nhất | `full_api/bao_cao_e2e_api.html` có 90 bước PASS; `booking_flow/bao_cao_e2e_booking_flow.html` PASS |
+| Chạy lại test lần cuối | Xong gần nhất | 140 tests OK |
+| Chạy E2E DB thật lần cuối | Xong gần nhất | `full_api/bao_cao_e2e_api.html` có 91 bước PASS; `booking_flow/bao_cao_e2e_booking_flow.html` PASS |
 
 ## 6. Ghi Chú Khi Quay Video
 
@@ -155,7 +157,7 @@ Kết quả gần nhất:
 
 ```text
 python manage.py check -> OK
-python manage.py test -> 136 tests OK
-E2E DB thật -> full_api/bao_cao_e2e_api.html 90 bước PASS; booking_flow/bao_cao_e2e_booking_flow.html PASS
+python manage.py test -> 140 tests OK
+E2E DB thật -> full_api/bao_cao_e2e_api.html 91 bước PASS; booking_flow/bao_cao_e2e_booking_flow.html PASS
 hotel migrations -> 0001, 0002, 0003 đã apply
 ```
