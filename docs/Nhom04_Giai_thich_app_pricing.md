@@ -2,17 +2,25 @@
 
 ## 1. Mục đích
 
-`pricing` là app/module nâng cao tách riêng khỏi app chính `hotel_app`.
+`pricing` là app/module nâng cao tách riêng khỏi app chính `hotel_app`, đóng vai trò **module tính giá trung tâm** của toàn hệ thống.
 
-App chính `hotel_app` quản lý dữ liệu khách sạn như phòng, loại phòng, khách hàng, booking và hóa đơn. App `pricing` không tạo bảng mới, mà đọc dữ liệu `Room` và `RoomType` từ `hotel_app.models` để tính giá booking dự kiến.
+App chính `hotel_app` quản lý dữ liệu khách sạn như phòng, loại phòng, khách hàng, booking và hóa đơn. App `pricing` không tạo bảng mới, mà đọc dữ liệu `Room` và `RoomType` từ `hotel_app.models` để tính giá.
+
+`pricing` phục vụ hai mục đích:
+
+1. **Tính giá dự kiến** — qua API `/api/pricing/calculate-booking-price/` cho phép lễ tân xem giá trước khi đặt phòng.
+2. **Tính tiền thực tế** — `InvoiceService` và `BookingService` trong `hotel_app` gọi `BookingPriceCalculator` để tính `room_charge` trên hóa đơn, thay vì tự xử lý công thức giá.
 
 Ý nghĩa khi trình bày:
 
 ```text
 Một Django project có thể có nhiều app.
 hotel_app là app nghiệp vụ chính.
-pricing là module tính toán riêng.
-API trong pricing gọi dữ liệu từ hotel_app nhưng thuật toán tính giá nằm trong pricing/services.py.
+pricing là module tính giá trung tâm.
+Toàn bộ công thức tính giá phòng (phí cuối tuần, giảm giá VIP)
+chỉ nằm ở một chỗ duy nhất: pricing/services.py.
+InvoiceService và BookingService đều gọi BookingPriceCalculator
+thay vì tự xử lý công thức riêng.
 ```
 
 ## 2. Cấu trúc file
@@ -157,28 +165,33 @@ final_price = 1500000 + 100000 - 160000 = 1440000
 
 ## 8. Cách dùng trong app chính
 
-Hiện tại `pricing` được expose thành API riêng để demo rõ việc app chính gọi module tính toán riêng.
+`pricing` được dùng trực tiếp bởi hai service trong `hotel_app`:
 
-Nếu muốn dùng trực tiếp trong nghiệp vụ booking, `hotel_app/services/booking_service.py` có thể import:
+**`InvoiceService.__tinh_tien`** (`hotel_app/services/invoice_service.py`):
 
 ```python
 from pricing.services import BookingPriceCalculator
+
+customer_type = booking.customer.customer_type
+result, _ = BookingPriceCalculator().tinh_gia(
+    booking.room, booking.check_in, booking.check_out, customer_type
+)
+tien_phong = result['final_price']
 ```
 
-Sau đó gọi:
+**`BookingService.tinh_tien_phong`** (`hotel_app/services/booking_service.py`):
 
 ```python
-calculator = BookingPriceCalculator()
-room = calculator.lay_phong(room_id)
-price_data, err_msg = calculator.tinh_gia(
-    room,
-    check_in,
-    check_out,
-    customer_type,
+from pricing.services import BookingPriceCalculator
+
+customer_type = booking.customer.customer_type
+result, _ = BookingPriceCalculator().tinh_gia(
+    booking.room, booking.check_in, booking.check_out, customer_type
 )
+return result['final_price']
 ```
 
-Như vậy `hotel_app` vẫn quản lý booking, còn `pricing` chịu trách nhiệm tính giá.
+Như vậy `hotel_app` vẫn quản lý booking và hóa đơn, còn `pricing` là nơi duy nhất chứa công thức tính giá phòng — tránh trùng lặp logic giữa các service.
 
 ## 9. Cách demo
 

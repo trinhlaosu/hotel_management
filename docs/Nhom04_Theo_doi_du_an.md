@@ -7,7 +7,7 @@ File này dùng để theo dõi kịch bản demo, trạng thái hoàn thành v�
 | Hạng mục | Trạng thái | Ghi chú |
 |---|---|---|
 | Source code backend API | Hoàn thành | Django REST Framework, MySQL |
-| Module pricing nâng cao | Hoàn thành | App riêng `pricing`, API tính giá booking dự kiến từ dữ liệu Room/RoomType |
+| Module pricing nâng cao | Hoàn thành | App riêng `pricing`, module tính giá trung tâm: API dự kiến + `InvoiceService`/`BookingService` đều gọi `BookingPriceCalculator` |
 | Database | Hoàn thành | 10 bảng nghiệp vụ chính |
 | Migration | Hoàn thành | `hotel.0001`, `0002`, `0003` đã apply |
 | Authentication | Hoàn thành | Đăng ký, đăng nhập, đăng xuất, profile, đổi mật khẩu |

@@ -1,6 +1,5 @@
 """Invoice business logic."""
 from core import messages as msg
-from datetime import date
 
 from django.utils import timezone
 
@@ -22,7 +21,7 @@ class InvoiceService:
     def tao_hoa_don_thu_cong(self, booking_id):
         try:
             booking = Booking.objects.select_related(
-                'room', 'room__room_type').get(id=booking_id)
+                'customer', 'room', 'room__room_type').get(id=booking_id)
         except Booking.DoesNotExist:
             return None, msg.BOOKING_NOT_FOUND
         invoice = self.tao_hoa_don(booking)
@@ -37,17 +36,13 @@ class InvoiceService:
         return invoice, None
 
     def __tinh_tien(self, booking):
+        from pricing.services import BookingPriceCalculator
 
-        ci = booking.check_in
-        co = booking.check_out
-        if isinstance(ci, str):
-            ci = date.fromisoformat(ci)
-        if isinstance(co, str):
-            co = date.fromisoformat(co)
-
-        so_dem     = (co - ci).days
-        gia_dem    = float(booking.room.room_type.price_per_night)
-        tien_phong = so_dem * gia_dem
+        customer_type = booking.customer.customer_type
+        result, _ = BookingPriceCalculator().tinh_gia(
+            booking.room, booking.check_in, booking.check_out, customer_type
+        )
+        tien_phong = result['final_price']
 
         ds_dv   = BookingService.objects.filter(booking_id=booking.id)
         tien_dv = sum(float(dv.subtotal) for dv in ds_dv)

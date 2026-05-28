@@ -81,9 +81,12 @@ class BookingService:
         return (check_out - check_in).days
 
     def tinh_tien_phong(self, booking):
-        so_dem    = self.tinh_so_dem(booking.check_in, booking.check_out)
-        gia_dem   = float(booking.room.room_type.price_per_night)
-        return so_dem * gia_dem
+        from pricing.services import BookingPriceCalculator
+        customer_type = booking.customer.customer_type
+        result, _ = BookingPriceCalculator().tinh_gia(
+            booking.room, booking.check_in, booking.check_out, customer_type
+        )
+        return result['final_price']
 
     def tinh_tien_dich_vu(self, booking_id):
         from hotel_app.models import BookingService as BS
@@ -129,7 +132,7 @@ class BookingService:
             return None, None, err_msg
 
         booking_full = Booking.objects.select_related(
-            'room', 'room__room_type').get(id=booking.id)
+            'customer', 'room', 'room__room_type').get(id=booking.id)
         invoice = InvoiceService().tao_hoa_don(booking_full)
         return booking, invoice, None
 
@@ -176,8 +179,8 @@ class BookingService:
         from hotel_app.services.invoice_service import InvoiceService
 
         try:
-            b = Booking.objects.select_related('room', 'room__room_type').get(
-                id=booking_id)
+            b = Booking.objects.select_related(
+                'customer', 'room', 'room__room_type').get(id=booking_id)
             if b.status != 'dang_o':
                 return None, msg.BOOKING_NOT_CHECKED_IN
             b.status = 'da_tra_phong'

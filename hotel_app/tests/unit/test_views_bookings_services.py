@@ -63,7 +63,7 @@ class BookingTest(BaseTest):
         self.assertEqual(res.status_code, 201)
         data = res.json()["data"]
         self.assertIn("booking_id", data)
-        self.assertEqual(data["tien_phong"], 1_500_000.0)
+        self.assertEqual(data["tien_phong"], 1_600_000.0)
         self.assertTrue(
             Invoice.objects.filter(booking_id=data["booking_id"]).exists()
         )

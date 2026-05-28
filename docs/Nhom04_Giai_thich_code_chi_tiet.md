@@ -648,11 +648,11 @@ Nếu tạo booking thất bại thì trả lỗi.
 
 ```python
 booking_full = Booking.objects.select_related(
-    'room', 'room__room_type'
+    'customer', 'room', 'room__room_type'
 ).get(id=booking.id)
 ```
 
-Lấy lại booking kèm thông tin phòng và loại phòng để tính tiền.
+Lấy lại booking kèm thông tin khách hàng, phòng và loại phòng. `customer` cần thiết để lấy `customer_type` khi tính giá qua `BookingPriceCalculator`.
 
 ```python
 invoice = InvoiceService().tao_hoa_don(booking_full)
@@ -859,17 +859,16 @@ def __tinh_tien(self, booking):
 Hàm private dùng để tính tiền phòng và tiền dịch vụ.
 
 ```python
-so_dem = (co - ci).days
+from pricing.services import BookingPriceCalculator
+
+customer_type = booking.customer.customer_type
+result, _ = BookingPriceCalculator().tinh_gia(
+    booking.room, booking.check_in, booking.check_out, customer_type
+)
+tien_phong = result['final_price']
 ```
 
-Tính số đêm ở.
-
-```python
-gia_dem = float(booking.room.room_type.price_per_night)
-tien_phong = so_dem * gia_dem
-```
-
-Tính tiền phòng.
+Tính tiền phòng bằng cách gọi `BookingPriceCalculator` từ app `pricing`. Công thức tính (phí cuối tuần, giảm giá VIP) được tập trung trong `pricing/services.py`, `InvoiceService` không tự xử lý công thức riêng.
 
 ```python
 ds_dv = BookingService.objects.filter(booking_id=booking.id)
@@ -1143,11 +1142,14 @@ Các xử lý như tạo booking, cập nhật phòng, tính hóa đơn, thanh t
 Nếu thầy hỏi “project có nhiều app/module không?”, trả lời:
 
 ```text
-Project có app chính hotel_app và module nâng cao pricing.
+Project có app chính hotel_app và module tính giá trung tâm pricing.
 hotel_app quản lý dữ liệu phòng trong bảng Room và RoomType.
 pricing là module riêng có urls.py, views.py, serializers.py, services.py.
-API /api/pricing/calculate-booking-price/ nhận room_id, check_in, check_out, customer_type rồi gọi BookingPriceCalculator để tính giá booking dự kiến.
-Điều này giống mô hình app chính gọi sang module tính toán riêng.
+pricing phục vụ hai mục đích:
+  1. API /api/pricing/calculate-booking-price/ để xem giá dự kiến trước khi đặt phòng.
+  2. InvoiceService và BookingService gọi BookingPriceCalculator để tính tiền phòng thực tế trên hóa đơn.
+Toàn bộ công thức tính giá (phí cuối tuần, giảm giá VIP) chỉ nằm ở pricing/services.py,
+tránh trùng lặp logic giữa các service trong hotel_app.
 ```
 
 Nếu thầy hỏi “vì sao có serializer?”, trả lời:

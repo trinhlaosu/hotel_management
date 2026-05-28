@@ -288,14 +288,14 @@ class FullApiCoverageTest(BaseTest):
         self.assertEqual(float(bs.subtotal), 450000.0)
         invoice = Invoice.objects.get(booking_id=bid)
         self.assertEqual(float(invoice.service_charge), 450000.0)
-        self.assertEqual(float(invoice.total), 1950000.0)
+        self.assertEqual(float(invoice.total), 2000000.0)
 
         res = self.delete(f"/api/booking-services/{bs_id}/")
         self.assertEqual(res.status_code, 200)
         self.assertFalse(BookingService.objects.filter(id=bs_id).exists())
         invoice.refresh_from_db()
         self.assertEqual(float(invoice.service_charge), 0.0)
-        self.assertEqual(float(invoice.total), 1500000.0)
+        self.assertEqual(float(invoice.total), 1550000.0)
 
     def test_34_invoice_list_and_detail(self):
         self.login()
