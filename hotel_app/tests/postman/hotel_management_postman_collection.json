@@ -1,0 +1,881 @@
+{
+  "info": {
+    "_postman_id": "78f2fcb5-9f24-4c74-84b0-40f5a4ec9d2f",
+    "name": "Hotel Management - Full API Demo - Nhom 04",
+    "description": "Kich ban demo full API: auth -> user -> department -> employee -> customer -> room -> service -> pricing -> booking -> invoice -> report -> logout.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const suffix = Date.now().toString().slice(-8);",
+          "pm.collectionVariables.set('suffix', suffix);",
+          "pm.collectionVariables.set('demo_username', 'lt_demo_' + suffix);",
+          "pm.collectionVariables.set('demo_email', 'lt_demo_' + suffix + '@hotel.vn');",
+          "pm.collectionVariables.set('demo_department_name', 'Le tan Demo ' + suffix);",
+          "pm.collectionVariables.set('demo_employee_username', 'emp_demo_' + suffix);",
+          "pm.collectionVariables.set('demo_employee_email', 'emp_demo_' + suffix + '@hotel.vn');",
+          "pm.collectionVariables.set('demo_employee_phone', '09' + suffix);",
+          "pm.collectionVariables.set('demo_customer_phone', '08' + suffix);",
+          "pm.collectionVariables.set('demo_customer_id_card', '0792' + suffix);",
+          "pm.collectionVariables.set('demo_service_name', 'Dich vu demo ' + suffix);"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Auth - Login manager",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/login/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 - Auth - Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/auth/profile/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "profile",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "03 - Users - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "04 - Users - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('demo_user_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{demo_username}}\",\n  \"password\": \"123456\",\n  \"email\": \"{{demo_email}}\",\n  \"role\": \"le_tan\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/users/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 - Users - Disable",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{demo_user_id}}/disable/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "{{demo_user_id}}",
+            "disable",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "06 - Users - Enable",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{demo_user_id}}/enable/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "{{demo_user_id}}",
+            "enable",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "07 - Departments - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/departments/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "departments",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "08 - Departments - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('demo_department_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{demo_department_name}}\",\n  \"description\": \"Phong ban demo bang Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/departments/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "departments",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "09 - Employees - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/employees/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "employees",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "10 - Employees - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('demo_employee_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{demo_employee_username}}\",\n  \"password\": \"123456\",\n  \"email\": \"{{demo_employee_email}}\",\n  \"department_id\": {{demo_department_id}},\n  \"full_name\": \"Nhan vien Demo Postman\",\n  \"phone\": \"{{demo_employee_phone}}\",\n  \"salary\": 8500000,\n  \"hire_date\": \"2026-01-01\",\n  \"shift\": \"sang\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/employees/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "employees",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "11 - Customers - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/customers/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "customers",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "12 - Customers - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('customer_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"full_name\": \"Postman Demo Customer\",\n  \"phone\": \"{{demo_customer_phone}}\",\n  \"email\": \"demo{{suffix}}@hotel.vn\",\n  \"id_card\": \"{{demo_customer_id_card}}\",\n  \"address\": \"TP. Ho Chi Minh\",\n  \"customer_type\": \"vip\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/customers/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "customers",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "13 - Room Types - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/room-types/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "room-types",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "14 - Rooms - Available",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/rooms/?status=trong",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "rooms",
+            ""
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "trong"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "15 - Rooms - Update status",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"trong\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/rooms/{{room_id}}/status/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "rooms",
+            "{{room_id}}",
+            "status",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "16 - Services - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/services/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "17 - Services - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('demo_service_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{demo_service_name}}\",\n  \"price\": 120000,\n  \"description\": \"Dich vu demo bang Postman\",\n  \"is_active\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/services/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "services",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "18 - Pricing - Calculate booking price",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"room_id\": {{room_id}},\n  \"check_in\": \"{{check_in}}\",\n  \"check_out\": \"{{check_out}}\",\n  \"customer_type\": \"vip\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/pricing/calculate-booking-price/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "pricing",
+            "calculate-booking-price",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "19 - Bookings - Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.booking_id) pm.collectionVariables.set('booking_id', json.data.booking_id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customer_id\": {{customer_id}},\n  \"room_id\": {{room_id}},\n  \"check_in\": \"{{check_in}}\",\n  \"check_out\": \"{{check_out}}\",\n  \"note\": \"Booking demo full API by Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/bookings/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "20 - Bookings - Detail",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "21 - Bookings - Confirm",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/confirm/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "confirm",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "22 - Bookings - Check-in",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/check-in/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "check-in",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "23 - Booking Services - Add",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"service_id\": {{demo_service_id}},\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/services/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "services",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "24 - Booking Services - List by booking",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/services/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "services",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "25 - Invoices - View by booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.id) pm.collectionVariables.set('invoice_id', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/invoice/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "invoice",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "26 - Bookings - Check-out",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/bookings/{{booking_id}}/check-out/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "bookings",
+            "{{booking_id}}",
+            "check-out",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "27 - Invoices - Pay",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"payment_method\": \"chuyen_khoan\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/invoices/{{invoice_id}}/pay/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "invoices",
+            "{{invoice_id}}",
+            "pay",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "28 - Reports - Revenue",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/reports/revenue/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "reports",
+            "revenue",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "29 - Reports - Room status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/reports/room-status/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "reports",
+            "room-status",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "30 - Reports - Booking statistics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/reports/booking-statistics/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "reports",
+            "booking-statistics",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "31 - Reports - Top services",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/reports/top-services/?top=3",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "reports",
+            "top-services",
+            ""
+          ],
+          "query": [
+            {
+              "key": "top",
+              "value": "3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "32 - Auth - Logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/auth/logout/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "logout",
+            ""
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "admin_username",
+      "value": "ql001"
+    },
+    {
+      "key": "admin_password",
+      "value": "MyChi@123"
+    },
+    {
+      "key": "room_id",
+      "value": "16"
+    },
+    {
+      "key": "check_in",
+      "value": "2028-08-10"
+    },
+    {
+      "key": "check_out",
+      "value": "2028-08-13"
+    },
+    {
+      "key": "customer_id",
+      "value": "1"
+    },
+    {
+      "key": "booking_id",
+      "value": "1"
+    },
+    {
+      "key": "invoice_id",
+      "value": "1"
+    },
+    {
+      "key": "demo_service_id",
+      "value": "1"
+    },
+    {
+      "key": "demo_user_id",
+      "value": "1"
+    },
+    {
+      "key": "demo_department_id",
+      "value": "2"
+    }
+  ]
+}
