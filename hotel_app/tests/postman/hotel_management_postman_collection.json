@@ -457,7 +457,7 @@
       "name": "Kịch Bản 2: Luồng Quản Trị Hệ Thống (Admin)",
       "item": [
         {
-          "name": "1. Auth - Login (Quản lý)",
+          "name": "1. Đăng nhập",
           "request": {
             "method": "POST",
             "header": [
@@ -468,7 +468,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+              "raw": "{\n  \"username\": \"ql001\",\n  \"password\": \"MyChi@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/api/auth/login/",
@@ -485,265 +490,67 @@
           }
         },
         {
-          "name": "2. Users - List",
+          "name": "2. Thêm loại phòng mới",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/users/",
+              "raw": "{{base_url}}/api/room-types/",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "users",
+                "room-types",
                 ""
               ]
-            }
-          }
-        },
-        {
-          "name": "3. Users - Create",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.id) pm.collectionVariables.set('demo_user_id', json.data.id);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"{{demo_username}}\",\n  \"password\": \"123456\",\n  \"email\": \"{{demo_email}}\",\n  \"role\": \"le_tan\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                ""
-              ]
+              "raw": "{\n  \"name\": \"Deluxe\",\n  \"price_per_night\": 800000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         },
         {
-          "name": "4. Users - Disable",
+          "name": "3. Thêm phòng mới",
           "request": {
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/users/{{demo_user_id}}/disable/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "{{demo_user_id}}",
-                "disable",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "5. Users - Enable",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/users/{{demo_user_id}}/enable/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "{{demo_user_id}}",
-                "enable",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "6. Departments - List",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/departments/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "departments",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "7. Departments - Create",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.id) pm.collectionVariables.set('demo_department_id', json.data.id);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"{{demo_department_name}}\",\n  \"description\": \"Phong ban demo bang Postman\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/departments/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "departments",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "8. Employees - List",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/employees/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "employees",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "9. Employees - Create",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.id) pm.collectionVariables.set('demo_employee_id', json.data.id);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"{{demo_employee_username}}\",\n  \"password\": \"123456\",\n  \"email\": \"{{demo_employee_email}}\",\n  \"department_id\": {{demo_department_id}},\n  \"full_name\": \"Nhan vien Demo Postman\",\n  \"phone\": \"{{demo_employee_phone}}\",\n  \"salary\": 8500000,\n  \"hire_date\": \"2026-01-01\",\n  \"shift\": \"sang\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/employees/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "employees",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "10. Rooms - Update Status",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"trong\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/rooms/{{room_id}}/status/",
+              "raw": "{{base_url}}/api/rooms/?status=trong",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "rooms",
-                "{{room_id}}",
-                "status",
                 ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "11. Services - List",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/services/",
-              "host": [
-                "{{base_url}}"
               ],
-              "path": [
-                "api",
-                "services",
-                ""
+              "query": [
+                {
+                  "key": "status",
+                  "value": "trong"
+                }
               ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_number\": \"101\",\n  \"floor\": 1,\n  \"room_type_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         },
         {
-          "name": "12. Services - Create",
+          "name": "4. Thêm dịch vụ",
           "event": [
             {
               "listen": "test",
@@ -766,7 +573,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"{{demo_service_name}}\",\n  \"price\": 120000,\n  \"description\": \"Dich vu demo bang Postman\",\n  \"is_active\": true\n}"
+              "raw": "{\n  \"name\": \"Breakfast\",\n  \"price\": 50000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/api/services/",
@@ -782,7 +594,36 @@
           }
         },
         {
-          "name": "13. Reports - Revenue",
+          "name": "5. Xác nhận đặt phòng",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/{{booking_id}}/confirm/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{booking_id}}",
+                "confirm",
+                ""
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. Xem thống kê doanh thu",
           "request": {
             "method": "GET",
             "header": [],
@@ -801,45 +642,7 @@
           }
         },
         {
-          "name": "14. Reports - Room Status",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/reports/room-status/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "reports",
-                "room-status",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "15. Reports - Booking Stats",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/reports/booking-statistics/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "reports",
-                "booking-statistics",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "16. Reports - Top Services",
+          "name": "7. Xem top dịch vụ",
           "request": {
             "method": "GET",
             "header": [],
@@ -864,7 +667,7 @@
           }
         },
         {
-          "name": "17. Auth - Logout",
+          "name": "8. Đăng xuất",
           "request": {
             "method": "POST",
             "header": [],
@@ -879,6 +682,15 @@
                 "logout",
                 ""
               ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         }
