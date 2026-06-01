@@ -1,0 +1,3591 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Báo cáo Kiểm thử E2E – Toàn bộ API – Nhóm 04</title>
+  <style>
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1f2933; }
+    header { padding: 24px 36px; background: #f7f9fc; border-bottom: 2px solid #d8dee8; }
+    main { padding: 24px 36px 36px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    h2 { margin: 24px 0 10px; font-size: 18px; color: #374151; }
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 12px; margin: 18px 0 24px; }
+    .box { border: 1px solid #d8dee8; padding: 12px; }
+    .label { color: #637083; font-size: 13px; }
+    .value { font-weight: 700; font-size: 20px; }
+    .value.ok { color: #047857; }
+    .value.ng { color: #b91c1c; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 32px; }
+    th, td { border: 1px solid #d8dee8; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #edf2f7; }
+    tr.pass td:nth-child(8) { color: #047857; font-weight: 700; }
+    tr.fail td:nth-child(8) { color: #b91c1c; font-weight: 700; }
+    tr.check-row { background: #fafafa; }
+    tr.check-row td:nth-child(4) code { background: #e0f2fe; color: #0369a1; }
+    code { background: #f5f7fa; padding: 1px 4px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Báo cáo Kiểm thử E2E – Toàn bộ API – Nhóm 04</h1>
+    <div>Thời gian sinh báo cáo: 01/06/2026 22:23:49</div>
+    <div>Database: <code>hotel_management</code></div>
+    <div>Prefix dữ liệu sinh ra: <code>full01</code></div>
+    <div style="margin-top:8px;font-size:13px;color:#637083">
+      Hàng <code style="background:#e0f2fe;color:#0369a1">CHECK</code>
+      là bước xác minh nội dung response / DB, không phải HTTP call.
+    </div>
+  </header>
+  <main>
+    <section class="summary">
+      <div class="box">
+        <div class="label">Trạng thái</div>
+        <div class="value ok">PASS</div>
+      </div>
+      <div class="box"><div class="label">Tổng bước</div><div class="value">264</div></div>
+      <div class="box"><div class="label">PASS</div><div class="value ok">264</div></div>
+      <div class="box"><div class="label">FAIL</div><div class="value ng">0</div></div>
+    </section>
+
+    <h2>Tổng hợp theo nhóm API</h2>
+    <table style="width:auto">
+      <thead>
+        <tr><th>Nhóm</th><th>Tổng</th><th>PASS</th><th>FAIL</th></tr>
+      </thead>
+      <tbody><tr>
+              <td>Auth</td>
+              <td>18</td>
+              <td style="color:#047857;font-weight:700">18</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Users</td>
+              <td>21</td>
+              <td style="color:#047857;font-weight:700">21</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Departments</td>
+              <td>14</td>
+              <td style="color:#047857;font-weight:700">14</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Employees</td>
+              <td>20</td>
+              <td style="color:#047857;font-weight:700">20</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Customers</td>
+              <td>18</td>
+              <td style="color:#047857;font-weight:700">18</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Room types</td>
+              <td>16</td>
+              <td style="color:#047857;font-weight:700">16</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Rooms</td>
+              <td>24</td>
+              <td style="color:#047857;font-weight:700">24</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Services</td>
+              <td>16</td>
+              <td style="color:#047857;font-weight:700">16</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Pricing</td>
+              <td>6</td>
+              <td style="color:#047857;font-weight:700">6</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Bookings</td>
+              <td>21</td>
+              <td style="color:#047857;font-weight:700">21</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Invoices</td>
+              <td>37</td>
+              <td style="color:#047857;font-weight:700">37</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Booking services</td>
+              <td>8</td>
+              <td style="color:#047857;font-weight:700">8</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Reports</td>
+              <td>18</td>
+              <td style="color:#047857;font-weight:700">18</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>Permission</td>
+              <td>14</td>
+              <td style="color:#047857;font-weight:700">14</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr>
+<tr>
+              <td>DB</td>
+              <td>13</td>
+              <td style="color:#047857;font-weight:700">13</td>
+              <td style="color:#b91c1c;font-weight:700">0</td>
+            </tr></tbody>
+    </table>
+
+    <h2>Chi tiết từng bước</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Nhóm</th><th>Action</th><th>Method</th>
+          <th>API / DB</th><th>Expected</th><th>Actual</th>
+          <th>Kết quả</th><th>Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="pass">
+              <td>1</td>
+              <td>Auth</td>
+              <td>Dang ky tai khoan moi</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/register/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Register user le_tan moi, mac dinh chua active</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>2</td>
+              <td>Auth</td>
+              <td>Dang nhap quan ly</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/login/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng nhập thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>3</td>
+              <td>Auth</td>
+              <td>Xem ho so ca nhan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/auth/profile/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>4</td>
+              <td>Auth</td>
+              <td>Profile.username == ql001</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>5</td>
+              <td>Auth</td>
+              <td>Profile.role == quan_ly</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>6</td>
+              <td>Auth</td>
+              <td>Cap nhat ho so ca nhan</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/auth/profile/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật hồ sơ thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>7</td>
+              <td>Auth</td>
+              <td>Doi mat khau tam</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/auth/change-password/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đổi mật khẩu thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>8</td>
+              <td>Auth</td>
+              <td>Khoi phuc mat khau ve mau</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/auth/change-password/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đổi mật khẩu thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>9</td>
+              <td>Users</td>
+              <td>Them tai khoan le tan</td>
+              <td><code>POST</code></td>
+              <td><code>/api/users/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Tạo tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>10</td>
+              <td>Users</td>
+              <td>User.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>11</td>
+              <td>Users</td>
+              <td>User.username khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>12</td>
+              <td>Users</td>
+              <td>User.role = le_tan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>13</td>
+              <td>Users</td>
+              <td>Danh sach tai khoan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>14</td>
+              <td>Users</td>
+              <td>List users tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>15</td>
+              <td>Users</td>
+              <td>Loc theo role le_tan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/?role=le_tan</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>16</td>
+              <td>Users</td>
+              <td>Filter role=le_tan: moi item co role=le_tan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>17</td>
+              <td>Users</td>
+              <td>Loc theo role quan_ly</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/?role=quan_ly</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>18</td>
+              <td>Users</td>
+              <td>Loc theo is_active=true</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/?is_active=true</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>19</td>
+              <td>Users</td>
+              <td>Tim kiem theo username</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/?search=lt_e2e_full01</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>20</td>
+              <td>Users</td>
+              <td>Sap xep theo username</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/?ordering=username</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>21</td>
+              <td>Users</td>
+              <td>Chi tiet tai khoan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/12/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>22</td>
+              <td>Users</td>
+              <td>User detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>23</td>
+              <td>Users</td>
+              <td>Cap nhat tai khoan (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/users/12/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>24</td>
+              <td>Users</td>
+              <td>User.email sau PUT khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>25</td>
+              <td>Users</td>
+              <td>Cap nhat email (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/users/12/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>26</td>
+              <td>Users</td>
+              <td>User.email sau PATCH khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>27</td>
+              <td>Users</td>
+              <td>Vo hieu tai khoan</td>
+              <td><code>POST</code></td>
+              <td><code>/api/users/12/disable/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Vô hiệu hóa tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>28</td>
+              <td>Users</td>
+              <td>Kich hoat tai khoan</td>
+              <td><code>POST</code></td>
+              <td><code>/api/users/12/enable/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>29</td>
+              <td>Departments</td>
+              <td>Them phong ban</td>
+              <td><code>POST</code></td>
+              <td><code>/api/departments/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm phòng ban thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>30</td>
+              <td>Departments</td>
+              <td>Dept.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>31</td>
+              <td>Departments</td>
+              <td>Dept.name khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>32</td>
+              <td>Departments</td>
+              <td>Danh sach phong ban</td>
+              <td><code>GET</code></td>
+              <td><code>/api/departments/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>33</td>
+              <td>Departments</td>
+              <td>List departments tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>34</td>
+              <td>Departments</td>
+              <td>Tim kiem phong ban</td>
+              <td><code>GET</code></td>
+              <td><code>/api/departments/?search=Le+tan+E2E</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>35</td>
+              <td>Departments</td>
+              <td>Sap xep theo ten</td>
+              <td><code>GET</code></td>
+              <td><code>/api/departments/?ordering=name</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>36</td>
+              <td>Departments</td>
+              <td>Chi tiet phong ban</td>
+              <td><code>GET</code></td>
+              <td><code>/api/departments/7/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>37</td>
+              <td>Departments</td>
+              <td>Dept detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>38</td>
+              <td>Departments</td>
+              <td>Cap nhat phong ban (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/departments/7/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật phòng ban thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>39</td>
+              <td>Departments</td>
+              <td>Dept.name sau PUT khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>40</td>
+              <td>Departments</td>
+              <td>Cap nhat mo ta (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/departments/7/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật phòng ban thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>41</td>
+              <td>Departments</td>
+              <td>Dept.description sau PATCH khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>42</td>
+              <td>Employees</td>
+              <td>Them nhan vien</td>
+              <td><code>POST</code></td>
+              <td><code>/api/employees/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm nhân viên thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>43</td>
+              <td>Employees</td>
+              <td>Employee.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>44</td>
+              <td>Employees</td>
+              <td>Employee.shift = sang sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>45</td>
+              <td>Employees</td>
+              <td>Employee.salary = 8.500.000 sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>46</td>
+              <td>Employees</td>
+              <td>Danh sach nhan vien</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>47</td>
+              <td>Employees</td>
+              <td>List employees tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>48</td>
+              <td>Employees</td>
+              <td>Loc theo shift sang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/?shift=sang</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>49</td>
+              <td>Employees</td>
+              <td>Filter shift=sang: moi item co shift=sang</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>50</td>
+              <td>Employees</td>
+              <td>Loc theo status dang_lam</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/?status=dang_lam</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>51</td>
+              <td>Employees</td>
+              <td>Filter status=dang_lam: moi item co status=dang_lam</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>52</td>
+              <td>Employees</td>
+              <td>Tim kiem nhan vien</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/?search=Vo+Mong+Chuyen</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>53</td>
+              <td>Employees</td>
+              <td>Sap xep theo ten nhan vien</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/?ordering=full_name</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>54</td>
+              <td>Employees</td>
+              <td>Chi tiet nhan vien</td>
+              <td><code>GET</code></td>
+              <td><code>/api/employees/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>55</td>
+              <td>Employees</td>
+              <td>Employee detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>56</td>
+              <td>Employees</td>
+              <td>Cap nhat nhan vien (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/employees/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật nhân viên thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>57</td>
+              <td>Employees</td>
+              <td>Employee.shift = chieu sau PUT</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>58</td>
+              <td>Employees</td>
+              <td>Employee.salary = 9.000.000 sau PUT</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>59</td>
+              <td>Employees</td>
+              <td>Cap nhat ca lam (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/employees/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật nhân viên thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>60</td>
+              <td>Employees</td>
+              <td>Employee.shift = toi sau PATCH</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>61</td>
+              <td>Customers</td>
+              <td>Them khach hang</td>
+              <td><code>POST</code></td>
+              <td><code>/api/customers/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm khách hàng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>62</td>
+              <td>Customers</td>
+              <td>Customer.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>63</td>
+              <td>Customers</td>
+              <td>Customer.customer_type = regular sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>64</td>
+              <td>Customers</td>
+              <td>Danh sach khach hang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>65</td>
+              <td>Customers</td>
+              <td>List customers tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>66</td>
+              <td>Customers</td>
+              <td>Loc theo loai regular</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/?customer_type=regular</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>67</td>
+              <td>Customers</td>
+              <td>Filter regular: moi item co customer_type=regular</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>68</td>
+              <td>Customers</td>
+              <td>Loc theo loai vip</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/?customer_type=vip</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>69</td>
+              <td>Customers</td>
+              <td>Filter vip: moi item co customer_type=vip</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>70</td>
+              <td>Customers</td>
+              <td>Tim kiem khach hang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/?search=Nguyen+Tat+Hung</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>71</td>
+              <td>Customers</td>
+              <td>Sap xep theo ten khach hang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/?ordering=full_name</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>72</td>
+              <td>Customers</td>
+              <td>Chi tiet khach hang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/15/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>73</td>
+              <td>Customers</td>
+              <td>Customer detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>74</td>
+              <td>Customers</td>
+              <td>Cap nhat loai khach (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/customers/15/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật khách hàng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>75</td>
+              <td>Customers</td>
+              <td>Customer.customer_type = vip sau PATCH</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>76</td>
+              <td>Customers</td>
+              <td>Cap nhat khach hang (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/customers/15/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật khách hàng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>77</td>
+              <td>Customers</td>
+              <td>Customer.phone sau PUT khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>78</td>
+              <td>Room types</td>
+              <td>Them loai phong</td>
+              <td><code>POST</code></td>
+              <td><code>/api/room-types/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm loại phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>79</td>
+              <td>Room types</td>
+              <td>RoomType.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>80</td>
+              <td>Room types</td>
+              <td>RoomType.price_per_night = 1,500,000</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>81</td>
+              <td>Room types</td>
+              <td>RoomType.capacity = 3 sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>82</td>
+              <td>Room types</td>
+              <td>Danh sach loai phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/room-types/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>83</td>
+              <td>Room types</td>
+              <td>List room-types tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>84</td>
+              <td>Room types</td>
+              <td>Tim kiem loai phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/room-types/?search=Suite+E2E</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>85</td>
+              <td>Room types</td>
+              <td>Sap xep theo gia phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/room-types/?ordering=price_per_night</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>86</td>
+              <td>Room types</td>
+              <td>Sap xep theo suc chua giam dan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/room-types/?ordering=-capacity</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>87</td>
+              <td>Room types</td>
+              <td>Chi tiet loai phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/room-types/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>88</td>
+              <td>Room types</td>
+              <td>RoomType detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>89</td>
+              <td>Room types</td>
+              <td>Cap nhat loai phong (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/room-types/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật loại phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>90</td>
+              <td>Room types</td>
+              <td>RoomType.name sau PUT khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>91</td>
+              <td>Room types</td>
+              <td>Cap nhat suc chua (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/room-types/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật loại phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>92</td>
+              <td>Room types</td>
+              <td>RoomType.capacity = 4 sau PATCH</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>93</td>
+              <td>Rooms</td>
+              <td>Them phong moi</td>
+              <td><code>POST</code></td>
+              <td><code>/api/rooms/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>94</td>
+              <td>Rooms</td>
+              <td>Room.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>95</td>
+              <td>Rooms</td>
+              <td>Room.status = trong sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>96</td>
+              <td>Rooms</td>
+              <td>Room.floor = 4 sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>97</td>
+              <td>Rooms</td>
+              <td>Danh sach phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>98</td>
+              <td>Rooms</td>
+              <td>List rooms tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>99</td>
+              <td>Rooms</td>
+              <td>Loc theo tang 4</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?floor=4</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>100</td>
+              <td>Rooms</td>
+              <td>Loc theo trang thai trong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?status=trong</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>101</td>
+              <td>Rooms</td>
+              <td>Filter status=trong: moi item co status=trong</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>102</td>
+              <td>Rooms</td>
+              <td>Loc theo room_type_id</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?room_type_id=9</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>103</td>
+              <td>Rooms</td>
+              <td>Loc theo suc chua toi thieu 4</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?capacity=4</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>104</td>
+              <td>Rooms</td>
+              <td>Tim kiem theo so phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?search=4E2316</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>105</td>
+              <td>Rooms</td>
+              <td>Sap xep theo tang</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/?ordering=floor</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>106</td>
+              <td>Rooms</td>
+              <td>Chi tiet phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>107</td>
+              <td>Rooms</td>
+              <td>Room detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>108</td>
+              <td>Rooms</td>
+              <td>Room.status = trong (detail)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>109</td>
+              <td>Rooms</td>
+              <td>Cap nhat phong (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/rooms/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>110</td>
+              <td>Rooms</td>
+              <td>Cap nhat tang (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/rooms/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>111</td>
+              <td>Rooms</td>
+              <td>Room.floor = 5 sau PATCH</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>112</td>
+              <td>Rooms</td>
+              <td>Doi trang thai sang bao tri</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/rooms/23/status/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật trạng thái phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>113</td>
+              <td>Rooms</td>
+              <td>Room.status = bao_tri sau doi</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>114</td>
+              <td>Rooms</td>
+              <td>Mo lai phong (trong)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/rooms/23/status/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật trạng thái phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>115</td>
+              <td>Rooms</td>
+              <td>Room.status = trong sau mo lai</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>116</td>
+              <td>Services</td>
+              <td>Them dich vu</td>
+              <td><code>POST</code></td>
+              <td><code>/api/services/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>117</td>
+              <td>Services</td>
+              <td>Service.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>118</td>
+              <td>Services</td>
+              <td>Service.price = 350,000 sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>119</td>
+              <td>Services</td>
+              <td>Danh sach dich vu (active)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>120</td>
+              <td>Services</td>
+              <td>List services tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>121</td>
+              <td>Services</td>
+              <td>Loc is_active=true</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/?is_active=true</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>122</td>
+              <td>Services</td>
+              <td>Tim kiem dich vu Spa</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/?search=Spa</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>123</td>
+              <td>Services</td>
+              <td>Sap xep theo gia giam dan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/?ordering=-price</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>124</td>
+              <td>Services</td>
+              <td>Sap xep theo ten dich vu</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/?ordering=name</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>125</td>
+              <td>Services</td>
+              <td>Chi tiet dich vu</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/13/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>126</td>
+              <td>Services</td>
+              <td>Service detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>127</td>
+              <td>Services</td>
+              <td>Cap nhat dich vu (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/services/13/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>128</td>
+              <td>Services</td>
+              <td>Service.is_active = True sau PUT</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>129</td>
+              <td>Services</td>
+              <td>Cap nhat mo ta dich vu (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/services/13/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>130</td>
+              <td>Services</td>
+              <td>Service.description sau PATCH khop</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>131</td>
+              <td>Pricing</td>
+              <td>Tinh gia booking (VIP, 3 dem)</td>
+              <td><code>POST</code></td>
+              <td><code>/api/pricing/calculate-booking-price/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Tính giá booking thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>132</td>
+              <td>Pricing</td>
+              <td>Pricing.so_dem = 3 (VIP)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>2028-08-10 → 2028-08-13 = 3 dem</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>133</td>
+              <td>Pricing</td>
+              <td>Pricing.final_price &gt; 0 (VIP)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>134</td>
+              <td>Pricing</td>
+              <td>Tinh gia booking (regular, 4 dem)</td>
+              <td><code>POST</code></td>
+              <td><code>/api/pricing/calculate-booking-price/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Tính giá booking thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>135</td>
+              <td>Pricing</td>
+              <td>Pricing.so_dem = 4 (regular)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>2029-01-01 → 2029-01-05 = 4 dem</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>136</td>
+              <td>Pricing</td>
+              <td>Pricing.final_price &gt; 0 (regular)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>137</td>
+              <td>Bookings</td>
+              <td>Tao dat phong chinh</td>
+              <td><code>POST</code></td>
+              <td><code>/api/bookings/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Đặt phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>138</td>
+              <td>Bookings</td>
+              <td>booking_id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>139</td>
+              <td>Bookings</td>
+              <td>Booking.tong_tien &gt; 0 (3 dem)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>140</td>
+              <td>Invoices</td>
+              <td>Xem hoa don ngay sau khi tao booking</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/23/invoice/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Invoice duoc tao tu dong khi tao booking</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>141</td>
+              <td>Invoices</td>
+              <td>invoice_id duoc tra ve ngay sau booking</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>142</td>
+              <td>Invoices</td>
+              <td>room_charge &gt; 0 ngay sau tao booking</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Phong Suite 1,500,000/dem x 3 dem</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>143</td>
+              <td>Invoices</td>
+              <td>service_charge = 0 khi chua co dich vu</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>144</td>
+              <td>Bookings</td>
+              <td>Danh sach dat phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>145</td>
+              <td>Bookings</td>
+              <td>List bookings tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>146</td>
+              <td>Bookings</td>
+              <td>Loc theo customer_id</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?customer_id=15</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>147</td>
+              <td>Bookings</td>
+              <td>Loc theo room_id</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?room_id=23</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>148</td>
+              <td>Bookings</td>
+              <td>Loc theo trang thai cho_xac_nhan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?status=cho_xac_nhan</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>149</td>
+              <td>Bookings</td>
+              <td>Loc theo khoang ngay check_in</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?tu_ngay=2028-12-01&amp;den_ngay=2028-12-31</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>150</td>
+              <td>Bookings</td>
+              <td>Sap xep theo check_in</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?ordering=check_in</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>151</td>
+              <td>Bookings</td>
+              <td>Sap xep theo created_at giam dan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/?ordering=-created_at</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>152</td>
+              <td>Bookings</td>
+              <td>Chi tiet dat phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>153</td>
+              <td>Bookings</td>
+              <td>Booking.so_dem = 3</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>2028-12-01 → 2028-12-04 = 3 dem</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>154</td>
+              <td>Bookings</td>
+              <td>Booking.tien_phong &gt; 0</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>155</td>
+              <td>Bookings</td>
+              <td>Cap nhat ghi chu (PUT)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/bookings/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật booking thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>156</td>
+              <td>Bookings</td>
+              <td>Tao booking de huy</td>
+              <td><code>POST</code></td>
+              <td><code>/api/bookings/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Tao booking rieng de test cancel va delete</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>157</td>
+              <td>Bookings</td>
+              <td>Huy dat phong (action cancel)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/bookings/24/cancel/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Hủy booking thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>158</td>
+              <td>Bookings</td>
+              <td>Xac nhan dat phong chinh</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/bookings/23/confirm/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xác nhận đặt phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>159</td>
+              <td>Bookings</td>
+              <td>Check-in dat phong chinh</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/bookings/23/check-in/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Check-in thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>160</td>
+              <td>Booking services</td>
+              <td>Them dich vu vao booking (qty=2)</td>
+              <td><code>POST</code></td>
+              <td><code>/api/bookings/23/services/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>Thêm dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>161</td>
+              <td>Booking services</td>
+              <td>BookingService.id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>162</td>
+              <td>Booking services</td>
+              <td>BookingService.quantity = 2 sau create</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>163</td>
+              <td>Booking services</td>
+              <td>BookingService.subtotal = 700,000 (2 x 350,000)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>164</td>
+              <td>Booking services</td>
+              <td>Danh sach dich vu theo booking</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/23/services/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>165</td>
+              <td>Booking services</td>
+              <td>List booking-services tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>166</td>
+              <td>Invoices</td>
+              <td>Kiem tra invoice sau them dich vu (qty=2)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/21/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>167</td>
+              <td>Invoices</td>
+              <td>service_charge = 700,000 sau qty=2</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>2 x 350,000 = 700,000</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>168</td>
+              <td>Invoices</td>
+              <td>total = room_charge + 700,000 sau qty=2</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>169</td>
+              <td>Booking services</td>
+              <td>Cap nhat so luong dich vu (qty=3)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/booking-services/18/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Cập nhật dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>170</td>
+              <td>Invoices</td>
+              <td>Kiem tra invoice sau cap nhat dich vu (qty=3)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/21/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>171</td>
+              <td>Invoices</td>
+              <td>service_charge = 1,050,000 sau qty=3</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>3 x 350,000 = 1,050,000</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>172</td>
+              <td>Invoices</td>
+              <td>total = room_charge + 1,050,000 sau qty=3</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>173</td>
+              <td>Bookings</td>
+              <td>Check-out dat phong chinh</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/bookings/23/check-out/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Check-out thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>174</td>
+              <td>Invoices</td>
+              <td>Xem hoa don cuoi qua booking (sau check-out)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/23/invoice/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>175</td>
+              <td>Invoices</td>
+              <td>Xem hoa don cuoi (full detail, chua thanh toan)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/21/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>176</td>
+              <td>Invoices</td>
+              <td>Invoice.payment_status = chua_thanh_toan truoc khi tra tien</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>177</td>
+              <td>Invoices</td>
+              <td>Invoice.paid_at = null truoc khi tra tien</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>178</td>
+              <td>Invoices</td>
+              <td>Invoice.total &gt; 0 (sau check-out)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>179</td>
+              <td>Invoices</td>
+              <td>Danh sach hoa don</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>180</td>
+              <td>Invoices</td>
+              <td>List invoices tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>181</td>
+              <td>Invoices</td>
+              <td>Loc chua thanh toan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?payment_status=chua_thanh_toan</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>182</td>
+              <td>Invoices</td>
+              <td>Filter chua_thanh_toan: moi item chua thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>183</td>
+              <td>Invoices</td>
+              <td>Sap xep theo tong tien giam dan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?ordering=-total</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>184</td>
+              <td>Invoices</td>
+              <td>Sap xep theo ngay tao</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?ordering=-created_at</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>185</td>
+              <td>Invoices</td>
+              <td>Chi tiet hoa don</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/21/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>186</td>
+              <td>Invoices</td>
+              <td>Invoice detail tra ve dung id</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>187</td>
+              <td>Invoices</td>
+              <td>Lap hoa don thu cong</td>
+              <td><code>POST</code></td>
+              <td><code>/api/invoices/</code></td>
+              <td>201</td>
+              <td>201</td>
+              <td>PASS</td>
+              <td>POST /api/invoices/ cho booking chua co invoice</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>188</td>
+              <td>Invoices</td>
+              <td>Manual invoice id duoc tra ve</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>189</td>
+              <td>Invoices</td>
+              <td>Cap nhat payment_method (PATCH)</td>
+              <td><code>PATCH</code></td>
+              <td><code>/api/invoices/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Thanh toán thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>190</td>
+              <td>Invoices</td>
+              <td>Invoice.payment_method = tien_mat sau PATCH</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>191</td>
+              <td>Invoices</td>
+              <td>Loc theo payment_method tien_mat</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?payment_method=tien_mat</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>192</td>
+              <td>Invoices</td>
+              <td>Thanh toan hoa don chinh (chuyen_khoan)</td>
+              <td><code>PUT</code></td>
+              <td><code>/api/invoices/21/pay/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Thanh toán thành công</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>193</td>
+              <td>Invoices</td>
+              <td>Invoice.payment_status = da_thanh_toan sau thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>194</td>
+              <td>Invoices</td>
+              <td>Invoice.payment_method = chuyen_khoan sau thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>195</td>
+              <td>Invoices</td>
+              <td>Invoice.paid_at khong null sau thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>196</td>
+              <td>Invoices</td>
+              <td>Invoice.total khong doi sau thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>197</td>
+              <td>Invoices</td>
+              <td>Loc hoa don da thanh toan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?payment_status=da_thanh_toan</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>198</td>
+              <td>Invoices</td>
+              <td>Filter da_thanh_toan: moi item da thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>199</td>
+              <td>Invoices</td>
+              <td>Loc theo payment_method chuyen_khoan</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/?payment_method=chuyen_khoan</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>200</td>
+              <td>Reports</td>
+              <td>Bao cao doanh thu (tat ca)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/revenue/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>201</td>
+              <td>Reports</td>
+              <td>Revenue: co field so_hoa_don_da_tt va tong_doanh_thu</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>202</td>
+              <td>Reports</td>
+              <td>Revenue: so_hoa_don_da_tt &gt;= 1 (co invoice vua thanh toan)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>203</td>
+              <td>Reports</td>
+              <td>Revenue: tong_doanh_thu &gt; 0</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>204</td>
+              <td>Reports</td>
+              <td>Bao cao doanh thu (loc ngay)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/revenue/?tu_ngay=2028-01-01&amp;den_ngay=2028-12-31</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>205</td>
+              <td>Reports</td>
+              <td>Bao cao trang thai phong</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/room-status/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>206</td>
+              <td>Reports</td>
+              <td>Room-status: co du 4 field (tong, trong, co_khach, bao_tri)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>207</td>
+              <td>Reports</td>
+              <td>Room-status: tong = trong + co_khach + bao_tri</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>208</td>
+              <td>Reports</td>
+              <td>Bao cao dat phong (tat ca)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/booking-statistics/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>209</td>
+              <td>Reports</td>
+              <td>Booking-stats: co field tong va da_tra_phong</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>210</td>
+              <td>Reports</td>
+              <td>Booking-stats: da_tra_phong &gt;= 1 (booking chinh da checkout)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>211</td>
+              <td>Reports</td>
+              <td>Booking-stats: da_huy &gt;= 1 (cancel_booking)</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>212</td>
+              <td>Reports</td>
+              <td>Bao cao dat phong (loc ngay)</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/booking-statistics/?tu_ngay=2028-12-01&amp;den_ngay=2028-12-31</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>213</td>
+              <td>Reports</td>
+              <td>Top 3 dich vu su dung nhieu nhat</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/top-services/?top=3</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>214</td>
+              <td>Reports</td>
+              <td>Top-services tra ve list</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>215</td>
+              <td>Reports</td>
+              <td>Top-services tra ve toi da 3 phan tu</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>216</td>
+              <td>Reports</td>
+              <td>Top-services: moi item co field ten_dich_vu, tong_so_luong, tong_tien</td>
+              <td><code>CHECK</code></td>
+              <td><code>-</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>217</td>
+              <td>Reports</td>
+              <td>Top 5 dich vu su dung nhieu nhat</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/top-services/?top=5</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>218</td>
+              <td>Auth</td>
+              <td>[Perm] Tam dang xuat manager</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/logout/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng xuất thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>219</td>
+              <td>Auth</td>
+              <td>[Perm] Le tan dang nhap</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/login/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng nhập thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>220</td>
+              <td>Permission</td>
+              <td>Le tan tao user → 403</td>
+              <td><code>POST</code></td>
+              <td><code>/api/users/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>221</td>
+              <td>Permission</td>
+              <td>Le tan tao phong ban → 403</td>
+              <td><code>POST</code></td>
+              <td><code>/api/departments/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>222</td>
+              <td>Permission</td>
+              <td>Le tan tao loai phong → 403</td>
+              <td><code>POST</code></td>
+              <td><code>/api/room-types/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>223</td>
+              <td>Permission</td>
+              <td>Le tan tao phong → 403</td>
+              <td><code>POST</code></td>
+              <td><code>/api/rooms/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>224</td>
+              <td>Permission</td>
+              <td>Le tan tao dich vu → 403</td>
+              <td><code>POST</code></td>
+              <td><code>/api/services/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>225</td>
+              <td>Permission</td>
+              <td>Le tan xem bao cao doanh thu → 403</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/revenue/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>226</td>
+              <td>Permission</td>
+              <td>Le tan xem bao cao dat phong → 403</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/booking-statistics/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>227</td>
+              <td>Permission</td>
+              <td>Le tan xem bao cao trang thai phong → 403</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/room-status/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>228</td>
+              <td>Permission</td>
+              <td>Le tan xem top dich vu → 403</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/top-services/</code></td>
+              <td>403</td>
+              <td>403</td>
+              <td>PASS</td>
+              <td>Không có quyền thực hiện</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>229</td>
+              <td>Permission</td>
+              <td>Le tan xem danh sach phong → 200</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>230</td>
+              <td>Permission</td>
+              <td>Le tan xem danh sach khach hang → 200</td>
+              <td><code>GET</code></td>
+              <td><code>/api/customers/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>231</td>
+              <td>Permission</td>
+              <td>Le tan xem danh sach booking → 200</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>232</td>
+              <td>Permission</td>
+              <td>Le tan xem danh sach dich vu → 200</td>
+              <td><code>GET</code></td>
+              <td><code>/api/services/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>233</td>
+              <td>Permission</td>
+              <td>Le tan xem danh sach phong ban → 200</td>
+              <td><code>GET</code></td>
+              <td><code>/api/departments/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>234</td>
+              <td>Auth</td>
+              <td>[Perm] Le tan dang xuat</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/logout/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng xuất thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>235</td>
+              <td>Auth</td>
+              <td>[Perm] Manager dang nhap lai</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/login/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng nhập thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>236</td>
+              <td>Booking services</td>
+              <td>Xoa dich vu khoi booking</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/booking-services/18/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>237</td>
+              <td>Invoices</td>
+              <td>Xoa mem hoa don thu cong</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/invoices/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td></td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>238</td>
+              <td>Bookings</td>
+              <td>Xoa/huy booking da huy</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/bookings/24/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Hủy booking thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>239</td>
+              <td>Services</td>
+              <td>Vo hieu dich vu (DELETE)</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/services/13/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa dịch vụ thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>240</td>
+              <td>Rooms</td>
+              <td>Xoa mem phong</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/rooms/23/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>241</td>
+              <td>Room types</td>
+              <td>Xoa mem loai phong</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/room-types/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa loại phòng thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>242</td>
+              <td>Customers</td>
+              <td>Xoa mem khach hang</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/customers/15/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa khách hàng thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>243</td>
+              <td>Employees</td>
+              <td>Vo hieu nhan vien (DELETE)</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/employees/9/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đã vô hiệu hóa nhân viên</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>244</td>
+              <td>Departments</td>
+              <td>Xoa mem phong ban</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/departments/7/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Xóa phòng ban thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>245</td>
+              <td>Users</td>
+              <td>Vo hieu tai khoan le tan (DELETE)</td>
+              <td><code>DELETE</code></td>
+              <td><code>/api/users/12/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Vô hiệu hóa tài khoản thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>246</td>
+              <td>Auth</td>
+              <td>Dang xuat</td>
+              <td><code>POST</code></td>
+              <td><code>/api/auth/logout/</code></td>
+              <td>200</td>
+              <td>200</td>
+              <td>PASS</td>
+              <td>Đăng xuất thành công</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>247</td>
+              <td>Auth</td>
+              <td>Chan khi chua dang nhap: users</td>
+              <td><code>GET</code></td>
+              <td><code>/api/users/</code></td>
+              <td>401</td>
+              <td>401</td>
+              <td>PASS</td>
+              <td>Chưa đăng nhập</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>248</td>
+              <td>Auth</td>
+              <td>Chan khi chua dang nhap: bookings</td>
+              <td><code>GET</code></td>
+              <td><code>/api/bookings/</code></td>
+              <td>401</td>
+              <td>401</td>
+              <td>PASS</td>
+              <td>Chưa đăng nhập</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>249</td>
+              <td>Auth</td>
+              <td>Chan khi chua dang nhap: rooms</td>
+              <td><code>GET</code></td>
+              <td><code>/api/rooms/</code></td>
+              <td>401</td>
+              <td>401</td>
+              <td>PASS</td>
+              <td>Chưa đăng nhập</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>250</td>
+              <td>Auth</td>
+              <td>Chan khi chua dang nhap: reports</td>
+              <td><code>GET</code></td>
+              <td><code>/api/reports/revenue/</code></td>
+              <td>401</td>
+              <td>401</td>
+              <td>PASS</td>
+              <td>Chưa đăng nhập</td>
+            </tr>
+            
+
+            <tr class="pass">
+              <td>251</td>
+              <td>Auth</td>
+              <td>Chan khi chua dang nhap: invoices</td>
+              <td><code>GET</code></td>
+              <td><code>/api/invoices/</code></td>
+              <td>401</td>
+              <td>401</td>
+              <td>PASS</td>
+              <td>Chưa đăng nhập</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>252</td>
+              <td>DB</td>
+              <td>User le tan da duoc tao</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>253</td>
+              <td>DB</td>
+              <td>Department da soft delete</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>254</td>
+              <td>DB</td>
+              <td>Employee da nghi viec</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>255</td>
+              <td>DB</td>
+              <td>RoomType da soft delete</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>256</td>
+              <td>DB</td>
+              <td>Room da soft delete</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>257</td>
+              <td>DB</td>
+              <td>Service da bi vo hieu (is_active=False)</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>258</td>
+              <td>DB</td>
+              <td>Booking chinh da tra phong</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>259</td>
+              <td>DB</td>
+              <td>Booking cancel da huy</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>260</td>
+              <td>DB</td>
+              <td>BookingService da xoa (hard delete)</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>261</td>
+              <td>DB</td>
+              <td>Invoice chinh da thanh toan</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>262</td>
+              <td>DB</td>
+              <td>Invoice.payment_method = chuyen_khoan</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>263</td>
+              <td>DB</td>
+              <td>Invoice.paid_at duoc set</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            
+
+            <tr class="pass check-row">
+              <td>264</td>
+              <td>DB</td>
+              <td>Invoice thu cong da soft delete</td>
+              <td><code>CHECK</code></td>
+              <td><code>hotel_management DB</code></td>
+              <td>True</td>
+              <td>True</td>
+              <td>PASS</td>
+              <td>Kiem tra truc tiep DB that sau khi goi API</td>
+            </tr>
+            </tbody>
+    </table>
+  </main>
+</body>
+</html>
